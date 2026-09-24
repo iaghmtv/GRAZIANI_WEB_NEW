@@ -85,6 +85,13 @@ Las dos animaciones son SECUENCIAS DE FRAMES dibujadas en <canvas> (js\hero.js, 
 Reduced motion: sin pin ni scrub, muestra el estado final. Depuración: ?debug (marcadores), ?frame=0.25|0.5|0.75|1
 (fija un encuadre para capturas) y ?snaptest (prueba automática del snap, resultado en el <title>).
 
+PUBLICACIÓN (2026-09-24)
+------------------------
+Repo: https://github.com/iaghmtv/GRAZIANI_WEB_NEW (público, rama main). Cada push publica la carpeta 02 en GitHub Pages:
+  Página completa: https://iaghmtv.github.io/GRAZIANI_WEB_NEW/
+  Prototipo hero:  https://iaghmtv.github.io/GRAZIANI_WEB_NEW/hero.html
+Pages está configurado con origen "GitHub Actions". El push lo puede hacer Claude (regla en .claude\settings.json).
+
 PENDIENTES
 ----------
 - (hecho) Clip de la cordillera: 81 frames de ComfyUI ya integrados (HERO.cordillera.frames = 81).
