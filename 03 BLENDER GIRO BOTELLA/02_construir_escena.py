@@ -20,7 +20,7 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v003.blend"   # v003: tapa aparte (azul alta -> negra corta) + gotas + AgX
+BLEND_OUT = BASE + "/giro_botella_v004.blend"   # v004: etiquetas con forma real (alpha) y alineadas en mm
 TAPA_ECO_ALTO = 0.66      # la tapa Eco es "short": 66 % del alto de la tapa Clara (referencia: render par de junio)
 COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)   # negra
 FRAMES = 120

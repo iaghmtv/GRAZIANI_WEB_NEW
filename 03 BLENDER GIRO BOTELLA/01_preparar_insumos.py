@@ -62,51 +62,78 @@ def color_tapa(name):
     return [round(float(v) / 255, 4) for v in np.median(rgb, axis=0)]
 
 # ---------------- Etiquetas desenrolladas ----------------
-def desenrollar(name, W=4096, Hh=1024):
-    a = cargar(name); alpha = a[..., 3]; top, bot = bbox_rows(alpha); H = bot - top
-    y0, y1 = int(top + LABEL_FRAC[0] * H), int(top + LABEL_FRAC[1] * H)
+# Clara: la forma de la etiqueta (borde superior ondulado, círculo que sobresale) viene del canal alpha del
+# recorte: la etiqueta es opaca y la botella semitransparente. Eco: banda recta detectada por el brillo del
+# papel en el borde de la silueta. Las dos se ubican en metros desde la base (escala por el radio real) y se
+# pintan sobre un mismo anillo (rango unión), rellenando con transparente lo que no es etiqueta.
+PAPEL = np.array([245, 246, 244], np.float32)
+
+def banda_rows(name, a):
+    alpha = a[..., 3]; top, bot = bbox_rows(alpha); H = bot - top
+    ys = np.arange(int(top + 0.18 * H), int(top + 0.56 * H))
+    val = []
+    for y in ys:
+        c = np.where(alpha[y] > 20)[0]; w = c[-1] - c[0]
+        if name == "agua":
+            val.append(alpha[y, c[0] + w // 4:c[-1] - w // 4].mean() / 255)
+        else:
+            k = max(3, int(w * 0.03))
+            val.append(np.concatenate([a[y, c[0]:c[0] + k, :3].mean(axis=1), a[y, c[-1] - k:c[-1], :3].mean(axis=1)]).mean())
+    val = np.array(val)
+    sel = ys[val > (0.45 if name == "agua" else 232)]
+    y0, y1 = int(sel[0]), int(sel[-1])
+    if name == "agua":
+        y0 -= int(0.012 * H)                      # margen para el borde suave del círculo
+    return y0, y1, top, bot, H
+
+def medir(name):
+    a = cargar(name); alpha = a[..., 3]
+    y0, y1, top, bot, H = banda_rows(name, a)
     widths, cxs = [], []
-    for y in range(y0, y1):
+    for y in range(int(top + 0.30 * H), int(top + 0.42 * H)):
         c = np.where(alpha[y] > 20)[0]
         widths.append((c[-1] - c[0]) / 2); cxs.append((c[-1] + c[0]) / 2)
     R = float(np.median(widths)); cx = float(np.median(cxs))
-    band = np.array(Image.fromarray(a[y0:y1]).resize((a.shape[1], Hh), Image.LANCZOS))
+    px2m = r_lab / R                              # escala real: el radio en la etiqueta es el mismo en ambas
+    z_top, z_bot = (bot - y0) * px2m, (bot - y1) * px2m
+    return dict(a=a, y0=y0, y1=y1, R=R, cx=cx, z_top=z_top, z_bot=z_bot, H=H, top=top)
+
+med = {n: medir(n) for n in ("agua", "eco")}
+Z_MIN = min(m["z_bot"] for m in med.values()); Z_MAX = max(m["z_top"] for m in med.values())
+
+def desenrollar(name, W=4096, Hh=1024):
+    m = med[name]; a = m["a"]; R, cx = m["R"], m["cx"]
+    r0 = int(round((Z_MAX - m["z_top"]) / (Z_MAX - Z_MIN) * Hh))
+    r1 = int(round((Z_MAX - m["z_bot"]) / (Z_MAX - Z_MIN) * Hh))
+    band = np.array(Image.fromarray(a[m["y0"]:m["y1"]]).resize((a.shape[1], max(2, r1 - r0)), Image.LANCZOS)).astype(np.float32)
     us = np.arange(W) / W
     thetas = (us - 0.5) * 360.0
     front = np.abs(thetas) <= ANG_MAX
-    xs = cx + R * np.sin(np.radians(thetas[front]))
+    xs = cx + R * np.sin(np.radians(np.clip(thetas, -ANG_MAX, ANG_MAX)))
     xi = np.clip(np.round(xs).astype(int), 0, band.shape[1] - 1)
+    samp = band[:, xi]                            # (h, W, 4): frente real; fuera del frente repite la columna límite
     tex = np.zeros((Hh, W, 4), np.float32)
-    tex[:, front] = band[:, xi].astype(np.float32)
-    # dorso: relleno neutro (eco: blanco papel; agua: film claro translúcido)
-    if name == "eco":
-        fondo = np.array([244, 244, 241, 255], np.float32)
-    else:
-        med = np.median(band[:, xi][..., :3].reshape(-1, 3), axis=0)
-        fondo = np.array([med[0], med[1], med[2], 255], np.float32)
-    tex[:, ~front] = fondo
-    # fundido de 4° a cada lado del límite del frente para no ver la costura
-    fade = 4.0
-    w_front = np.clip((ANG_MAX + fade - np.abs(thetas)) / fade, 0, 1)   # 1 dentro, 0 afuera
-    # remuestrea los bordes del frente como referencia para fundir
-    edge_cols = np.clip(np.round(cx + R * np.sin(np.radians(np.clip(thetas, -ANG_MAX, ANG_MAX)))).astype(int), 0, band.shape[1] - 1)
-    ref = band[:, edge_cols].astype(np.float32)
-    mezcla = ref * w_front[None, :, None] + fondo[None, None, :] * (1 - w_front[None, :, None])
-    zona = (~front) & (w_front > 0)
-    tex[:, zona] = mezcla[:, zona]
-    tex[..., 3] = 255
+    rgb = samp[..., :3].copy()
     if name == "agua":
-        # etiqueta film transparente: lo impreso (oscuro) opaco, lo claro deja ver el agua
-        lum = tex[..., :3].mean(axis=2)
-        tex[..., 3] = np.clip((240 - lum) / 110, 0.30, 1.0) * 255
+        alpha = np.clip((samp[..., 3] / 255.0 - 0.2) / 0.6, 0, 1)   # etiqueta opaca -> 1, botella -> 0
+    else:
+        alpha = np.ones(samp.shape[:2], np.float32)
+    # dorso: papel blanco con la forma del borde (alpha de la columna límite), fundido de 4°
+    fade = 4.0
+    w_front = np.clip((ANG_MAX + fade - np.abs(thetas)) / fade, 0, 1)[None, :, None]
+    rgb = rgb * w_front + PAPEL[None, None, :] * (1 - w_front)
+    tex[r0:r1, :, :3] = rgb
+    tex[r0:r1, :, 3] = alpha * 255
     out = OUT + f"/etiqueta_{name}.png"
     Image.fromarray(tex.astype(np.uint8), "RGBA").save(out)
-    return out, R, (y1 - y0)
+    return out, R, (m["y1"] - m["y0"])
 
 info = {
     "alto_m": ALTO_M,
     "tapa_desde_z": round(tapa_z0, 5),
-    "etiqueta_z": [round(lab_z0, 5), round(lab_z1, 5)],
+    "etiqueta_z": [round(float(Z_MIN), 5), round(float(Z_MAX), 5)],
+    "etiqueta_z_agua": [round(float(med["agua"]["z_bot"]), 5), round(float(med["agua"]["z_top"]), 5)],
+    "etiqueta_z_eco": [round(float(med["eco"]["z_bot"]), 5), round(float(med["eco"]["z_top"]), 5)],
     "r_etiqueta_m": round(r_lab, 5),
     "color_tapa_agua": color_tapa("agua"),
     "color_tapa_eco": color_tapa("eco"),
@@ -114,7 +141,9 @@ info = {
 }
 for n in ("eco", "agua"):
     p, R, hpx = desenrollar(n)
-    print(f"etiqueta {n}: {p}  (R={R:.0f}px, alto banda={hpx}px en la foto)")
+    mm = med[n]
+    print(f"etiqueta {n}: {p}  (R={R:.0f}px, filas {mm['y0']}-{mm['y1']} = {(mm['y0']-mm['top'])/mm['H']:.3f}-{(mm['y1']-mm['top'])/mm['H']:.3f} del alto, z={mm['z_bot']*1000:.1f}-{mm['z_top']*1000:.1f} mm)")
+print(f"anillo etiqueta (unión): z={Z_MIN*1000:.1f}-{Z_MAX*1000:.1f} mm")
 json.dump(info, open(OUT + "/perfil_botella.json", "w"), indent=1)
 print(f"perfil: {len(perfil)} puntos, r_max={max(r for z, r in perfil):.4f} m, r_etiqueta={r_lab:.4f} m, tapa desde z={tapa_z0:.4f} m")
 print("tapa agua:", info["color_tapa_agua"], " tapa eco:", info["color_tapa_eco"])

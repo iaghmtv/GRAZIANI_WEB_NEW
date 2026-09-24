@@ -2,8 +2,16 @@
  "alto_m": 0.21,
  "tapa_desde_z": 0.18585,
  "etiqueta_z": [
-  0.11445,
-  0.15435
+  0.11536,
+  0.16317
+ ],
+ "etiqueta_z_agua": [
+  0.12094,
+  0.16317
+ ],
+ "etiqueta_z_eco": [
+  0.11536,
+  0.15596
  ],
  "r_etiqueta_m": 0.0303,
  "color_tapa_agua": [
