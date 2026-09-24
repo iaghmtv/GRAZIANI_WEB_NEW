@@ -273,6 +273,14 @@ img { display: block; max-width: 100%; }
   margin: 0 auto;
   padding: clamp(64px, 10vw, 140px) clamp(24px, 7vw, 120px);
 }
+/* Pantalla completa: el segundo scroll aterriza en una pantalla entera, con el contenido centrado */
+.section--pantalla {
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .section h2 {
   margin: 0 0 32px;
   font-weight: 300;

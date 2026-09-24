@@ -22,7 +22,7 @@
     giro: {
       frames: 120,           // render Blender (0 = flip CSS). Numerados desde 000.
       path: (i) => `assets/hero/giro/giro_${String(i).padStart(3, "0")}.webp`,
-      introFrames: 14,       // cuántos frames "desanda" la botella al entrar (pequeño giro de llegada)
+      introFrames: 30,       // cuántos frames "desanda" la botella al entrar (el giro arranca suave: 30 frames son ~23°)
     },
     cordillera: {
       frames: 81,            // clip ComfyUI (0 = solo paneo CSS sobre la foto fija)

@@ -20,11 +20,13 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v004.blend"   # v004: etiquetas con forma real (alpha) y alineadas en mm
+BLEND_OUT = BASE + "/giro_botella_v005.blend"   # v005: giro con ease-in-out fuerte + motion blur (barrido), etiqueta Eco con contraste
+GIRO_EASE = "CUBIC"        # curva del giro: arranca y termina suave, 3x la velocidad media a los 180° (cruce de etiquetas)
+SHUTTER = 0.85             # motion blur: fracción del frame que expone (barrido en la parte rápida)
 TAPA_ECO_ALTO = 0.66      # la tapa Eco es "short": 66 % del alto de la tapa Clara (referencia: render par de junio)
 COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)   # negra
 FRAMES = 120
-SWAP = (55, 65)            # cruce agua -> eco (la etiqueta mira al dorso alrededor del frame 60)
+SWAP = (57, 64)            # cruce agua -> eco: centrado en los 180° (frame 60.5), en la parte más rápida del giro
 RES = (800, 2000)          # encuadre vertical, igual que el placeholder web (giro_###.webp)
 SAMPLES_FULL, SAMPLES_TEST = 64, 24   # con denoise, 64 alcanza para web (~10 s/frame en RTX 4090)
 
@@ -243,7 +245,8 @@ bot.rotation_euler = (0.0, 0.0, math.tau)
 bot.keyframe_insert("rotation_euler", index=2, frame=FRAMES)
 for fc in bot.animation_data.action.fcurves:
     for kp in fc.keyframe_points:
-        kp.interpolation = "LINEAR"
+        kp.interpolation = GIRO_EASE        # ease-in-out: lento al inicio y al final, rápido en el medio
+        kp.easing = "EASE_IN_OUT"
 
 # ---------------------------------------------------------------- entorno: cordillera refractada y reflejada
 def plano_cordillera(nombre, y, ancho, flip, fuerza=0.75):
@@ -323,6 +326,13 @@ scene.cycles.caustics_reflective = False
 scene.cycles.caustics_refractive = False
 scene.render.film_transparent = True
 scene.cycles.film_transparent_glass = True
+# barrido: motion blur real de Cycles (la etiqueta se desenfoca solo donde el giro es rápido)
+scene.render.use_motion_blur = True
+scene.render.motion_blur_shutter = SHUTTER
+try:
+    scene.cycles.motion_blur_position = "CENTER"
+except Exception:
+    pass
 scene.cycles.film_transparent_roughness = 0.1
 scene.render.resolution_x, scene.render.resolution_y = RES
 scene.render.resolution_percentage = 100

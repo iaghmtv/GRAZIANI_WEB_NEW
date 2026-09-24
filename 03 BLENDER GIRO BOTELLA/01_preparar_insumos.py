@@ -122,6 +122,13 @@ def desenrollar(name, W=4096, Hh=1024):
     fade = 4.0
     w_front = np.clip((ANG_MAX + fade - np.abs(thetas)) / fade, 0, 1)[None, :, None]
     rgb = rgb * w_front + PAPEL[None, None, :] * (1 - w_front)
+    if name == "eco":
+        # el render de referencia viene lavado: más contraste (negro del círculo) y saturación (verdes)
+        from PIL import ImageEnhance
+        im8 = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), "RGB")
+        im8 = ImageEnhance.Contrast(im8).enhance(1.45)
+        im8 = ImageEnhance.Color(im8).enhance(1.8)
+        rgb = np.array(im8).astype(np.float32)
     tex[r0:r1, :, :3] = rgb
     tex[r0:r1, :, 3] = alpha * 255
     out = OUT + f"/etiqueta_{name}.png"
