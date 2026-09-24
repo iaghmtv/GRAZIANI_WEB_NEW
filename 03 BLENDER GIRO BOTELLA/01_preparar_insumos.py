@@ -135,10 +135,51 @@ def desenrollar(name, W=4096, Hh=1024):
     Image.fromarray(tex.astype(np.uint8), "RGBA").save(out)
     return out, R, (m["y1"] - m["y0"])
 
+
+# ---------------- Etiqueta DOBLE: Clara al frente (u 0.25-0.75), Eco en el dorso (u 0.75-1 y 0-0.25) ----------------
+# Al girar entra la otra etiqueta; no hay relleno de dorso ni fundido. El anillo usa el rango z de la Clara y la Eco
+# se apoya en la misma base (su banda es 1,7 mm más baja). Cada etiqueta llena ±90° comprimiendo los ±ANG_MAX útiles de la foto.
+def doble(W=4096, Hh=1024):
+    from PIL import ImageEnhance
+    zt, zb = med["agua"]["z_top"], med["agua"]["z_bot"]
+    tex = np.zeros((Hh, W, 4), np.float32)
+    us = np.arange(W) / W
+    theta = (us - 0.5) * 360.0
+    for name, centro in (("agua", 0.0), ("eco", 180.0)):
+        m = med[name]; a = m["a"]; R, cx = m["R"], m["cx"]
+        rel = ((theta - centro + 180.0) % 360.0) - 180.0
+        sel = np.abs(rel) <= 90.0
+        th_photo = rel[sel] * (ANG_MAX / 90.0)
+        xs = cx + R * np.sin(np.radians(th_photo))
+        xi = np.clip(np.round(xs).astype(int), 0, a.shape[1] - 1)
+        alto_rel = (m["z_top"] - m["z_bot"]) / (zt - zb)          # la Eco es apenas más baja: se apoya en la base
+        h = max(2, int(round(Hh * min(alto_rel, 1.0))))
+        band = np.array(Image.fromarray(a[m["y0"]:m["y1"]]).resize((a.shape[1], h), Image.LANCZOS)).astype(np.float32)
+        samp = band[:, xi]
+        rgb = samp[..., :3]
+        if name == "agua":
+            alpha = np.clip((samp[..., 3] / 255.0 - 0.2) / 0.6, 0, 1)
+        else:
+            im8 = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), "RGB")
+            im8 = ImageEnhance.Color(ImageEnhance.Contrast(im8).enhance(1.45)).enhance(1.8)
+            rgb = np.array(im8).astype(np.float32)
+            alpha = np.ones(samp.shape[:2], np.float32)
+        r0 = Hh - h
+        cols = np.where(sel)[0]
+        tex[r0:Hh, cols, :3] = rgb
+        tex[r0:Hh, cols, 3] = alpha * 255
+    out = OUT + "/etiqueta_doble.png"
+    Image.fromarray(tex.astype(np.uint8), "RGBA").save(out)
+    return out, zb, zt
+
+DOBLE_PATH, Z_DOBLE_MIN, Z_DOBLE_MAX = doble()
+print(f"etiqueta doble: {DOBLE_PATH}  anillo z={Z_DOBLE_MIN*1000:.1f}-{Z_DOBLE_MAX*1000:.1f} mm")
+
 info = {
     "alto_m": ALTO_M,
     "tapa_desde_z": round(tapa_z0, 5),
-    "etiqueta_z": [round(float(Z_MIN), 5), round(float(Z_MAX), 5)],
+    "etiqueta_z": [round(float(Z_DOBLE_MIN), 5), round(float(Z_DOBLE_MAX), 5)],
+    "etiqueta_doble": "etiqueta_doble.png",
     "etiqueta_z_agua": [round(float(med["agua"]["z_bot"]), 5), round(float(med["agua"]["z_top"]), 5)],
     "etiqueta_z_eco": [round(float(med["eco"]["z_bot"]), 5), round(float(med["eco"]["z_top"]), 5)],
     "r_etiqueta_m": round(r_lab, 5),

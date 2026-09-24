@@ -20,14 +20,15 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v006.blend"   # v006: TRES vueltas con ease-in-out + motion blur pleno (fluido)
-VUELTAS = 3                # vueltas completas en los 120 frames (el dorso mira a cámara a los 540°, en la parte rápida)
+BLEND_OUT = BASE + "/giro_botella_v007.blend"   # v007: etiqueta doble (Clara frente / Eco dorso), 2,5 vueltas: termina de frente en la Eco
+VUELTAS = 2.5              # media vuelta más y quedaría en la Clara: con etiqueta doble hacen falta N + 0,5 vueltas
 GIRO_EASE = "CUBIC"        # curva del giro: arranca y termina suave, 3x la velocidad media en el medio
 SHUTTER = 1.0              # motion blur: expone el frame completo (barrido continuo, sin estrobo entre frames)
 TAPA_ECO_ALTO = 0.66      # la tapa Eco es "short": 66 % del alto de la tapa Clara (referencia: render par de junio)
 COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)   # negra
 FRAMES = 120
-SWAP = (59, 62)            # cruce agua -> eco: centrado en el frame 60.5 (dorso a cámara), en la parte más rápida del giro
+SWAP = (82, 92)            # cambio de TAPA (azul alta -> negra corta): entre 792° y 858°, cuando el canto de la etiqueta
+                           # mira a cámara en la última media vuelta (la etiqueta ya no cruza: está en el dorso)
 RES = (800, 2000)          # encuadre vertical, igual que el placeholder web (giro_###.webp)
 SAMPLES_FULL, SAMPLES_TEST = 64, 24   # con denoise, 64 alcanza para web (~10 s/frame en RTX 4090)
 
@@ -227,15 +228,12 @@ try:
     bsdf.inputs["Specular IOR Level"].default_value = 0.22
 except KeyError:
     pass
-tex_a = nt.nodes.new("ShaderNodeTexImage"); tex_a.image = bpy.data.images.load(INS + "/etiqueta_agua.png"); tex_a.label = "Etiqueta Agua"
-tex_e = nt.nodes.new("ShaderNodeTexImage"); tex_e.image = bpy.data.images.load(INS + "/etiqueta_eco.png"); tex_e.label = "Etiqueta Eco"
-mix_c = nt.nodes.new("ShaderNodeMixRGB"); mix_c.label = "Cruce color"
-mix_a = nt.nodes.new("ShaderNodeMixRGB"); mix_a.label = "Cruce alpha"
-keyframe_swap(mix_c.inputs["Fac"]); keyframe_swap(mix_a.inputs["Fac"])
-nt.links.new(tex_a.outputs["Color"], mix_c.inputs["Color1"]); nt.links.new(tex_e.outputs["Color"], mix_c.inputs["Color2"])
-nt.links.new(tex_a.outputs["Alpha"], mix_a.inputs["Color1"]); nt.links.new(tex_e.outputs["Alpha"], mix_a.inputs["Color2"])
-nt.links.new(mix_c.outputs["Color"], bsdf.inputs["Base Color"])
-nt.links.new(mix_a.outputs["Color"], bsdf.inputs["Alpha"])
+# una sola textura con las dos etiquetas: Clara al frente (u 0.25-0.75) y Eco en el dorso; al girar entra la otra
+tex_d = nt.nodes.new("ShaderNodeTexImage")
+tex_d.image = bpy.data.images.load(INS + "/" + info.get("etiqueta_doble", "etiqueta_doble.png"))
+tex_d.label = "Etiqueta doble"
+nt.links.new(tex_d.outputs["Color"], bsdf.inputs["Base Color"])
+nt.links.new(tex_d.outputs["Alpha"], bsdf.inputs["Alpha"])
 nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
 etiqueta.data.materials.append(mat_et)
 
@@ -382,7 +380,7 @@ print("Guardado:", BLEND_OUT)
 
 if MODE_TEST:
     os.makedirs(BASE + "/render_test", exist_ok=True)
-    for f in (1, 60, 100):
+    for f in (1, 64, 88, 119):
         scene.frame_set(f)
         scene.render.filepath = BASE + f"/render_test/test_{f:04d}.png"
         bpy.ops.render.render(write_still=True)

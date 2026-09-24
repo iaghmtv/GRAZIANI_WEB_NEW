@@ -219,6 +219,36 @@
   tlB.to(stage, { yPercent: -110, duration: 1 }, 0)              // la botella, más cerca, se adelanta al paisaje
      .to(copyB, { autoAlpha: 0, y: -40, duration: 0.5, ease: "power1.in" }, 0);
 
+  /* ---------- Snap de las pantallas siguientes: cada sección se ubica al llegar cerca de su borde ---------- */
+  const pantallas = [...document.querySelectorAll("[data-nav]:not(.hero)")]
+    .filter((el) => !/contenedor9|contenedor10/.test(el.className));   // pie de página: sin snap
+  if (pantallas.length > 1) {
+    let tops = [];
+    const medir = () => { tops = pantallas.map((el) => Math.round(el.getBoundingClientRect().top + window.scrollY)); };
+    ScrollTrigger.create({
+      id: "pantallas",
+      trigger: pantallas[0],
+      start: "top top",
+      endTrigger: pantallas[pantallas.length - 1],
+      end: "top top",
+      onRefresh: () => { tops = []; },
+      snap: noSnap ? undefined : {
+        snapTo: (p, self) => {
+          if (!tops.length) medir();
+          const rango = self.end - self.start;
+          const y = self.start + p * rango;
+          let mejor = y, dist = Infinity;
+          tops.forEach((t) => { const d = Math.abs(t - y); if (d < dist) { dist = d; mejor = t; } });
+          // solo "ubica" si quedó cerca del borde de una pantalla; las secciones más altas que la ventana se leen libres
+          return dist <= window.innerHeight * 0.35 ? (mejor - self.start) / rango : p;
+        },
+        duration: { min: 0.3, max: 0.8 },
+        delay: 0.05,
+        ease: "power2.inOut",
+      },
+    });
+  }
+
   /* ---------- Llegada al cargar: la botella entra con un pequeño giro ---------- */
   if (frameParam === null) {
     const st0 = { f: HERO.giro.introFrames };
@@ -254,17 +284,26 @@
     // se empuja el reloj de GSAP y el ScrollTrigger a mano; tres scrolls cortos, el resultado va al <title>
     gsap.ticker.lagSmoothing(0);
     setInterval(() => { ScrollTrigger.update(); gsap.ticker.tick(); }, 16);
-    const pasos = [120, 100, -90];
+    // pasos: número = scrollBy relativo; {sel, off} = scrollTo al borde de esa sección más un desplazamiento
+    const pasos = [120, 100, -90, { sel: "#origen", off: -120 }, { sel: "#calidad", off: 140 }];
     const res = [];
     let i = 0;
     const paso = () => {
       if (i >= pasos.length) { document.title = "SNAPTEST " + res.join(" | "); return; }
-      window.scrollBy(0, pasos[i]);
+      const ps = pasos[i];
+      let objetivo = null;
+      if (typeof ps === "number") window.scrollBy(0, ps);
+      else {
+        const el = document.querySelector(ps.sel);
+        objetivo = Math.round(el.getBoundingClientRect().top + window.scrollY);
+        window.scrollTo(0, objetivo + ps.off);
+      }
       setTimeout(() => {
         const bajoLogo = [...document.querySelectorAll("[data-nav]")]
           .filter((el) => { const r = el.getBoundingClientRect(); return r.top <= 48 && r.bottom >= 48; })
           .map((el) => (el.id || el.className.split(" ")[0]) + ":" + el.dataset.nav).join(",");
-        res.push(`d${pasos[i]}>y${Math.round(window.scrollY)} A${stA.progress.toFixed(2)} B${tlB.scrollTrigger.progress.toFixed(2)} ${nav ? nav.className : ""} [${bajoLogo}]`);
+        const etiqueta = typeof ps === "number" ? `d${ps}` : `${ps.sel}${ps.off > 0 ? "+" : ""}${ps.off}(borde ${objetivo})`;
+        res.push(`${etiqueta}>y${Math.round(window.scrollY)} A${stA.progress.toFixed(2)} B${tlB.scrollTrigger.progress.toFixed(2)} ${nav ? nav.className : ""} [${bajoLogo}]`);
         i++; paso();
       }, 2600);
     };

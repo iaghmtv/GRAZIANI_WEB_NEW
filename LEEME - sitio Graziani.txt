@@ -28,7 +28,10 @@ E:\GRACIANI\WEB GRAZIANI\03 BLENDER GIRO BOTELLA\
                               se cruzan etiqueta y tapa) + motion blur de Cycles (shutter 0.85) = barrido desenfocado;
                               etiqueta Eco con +45 % contraste y +80 % saturación (venía lavada del render de referencia).
                               v006: TRES vueltas en los 120 frames (VUELTAS = 3) con obturador 1.0: barrido continuo, sin estrobo.
-    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v006.blend y renderiza
+                              v007: ETIQUETA DOBLE (insumos\etiqueta_doble.png): Clara al frente y Eco en el dorso de la misma
+                              botella; al girar entra la otra etiqueta, sin fundido ni relleno. 2,5 vueltas para terminar en la
+                              Eco. La tapa cambia (azul alta -> negra corta) en la última media vuelta (frames 82-92).
+    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v007.blend y renderiza
                               v003: tapa como objeto aparte con shape key (Clara azul alta -> Eco negra corta, 66 %),
                               950 gotas de condensación (malla propia hija de la botella), AgX y luces bajas (no quema)
     03_exportar_frames_web.py (python normal) render\giro_####.png -> 02 SITIO NUEVO\assets\hero\giro\giro_###.webp
@@ -77,6 +80,8 @@ Estilo Apple con GSAP ScrollTrigger. Coreografía:
             botella se adelanta con paralaje; el snap aterriza DE LLENO en la pantalla siguiente (fase B, heroB).
             Quiénes somos es de alto pantalla completa (.section--pantalla), con el contenido centrado.
   El logo del nav cambia de blanco a azul según el fondo que tenga debajo: cada sección lleva data-nav="dark|light".
+  Snap de pantallas: después del hero, cada sección con data-nav (salvo el pie) se "ubica" al soltar el scroll a menos
+  de 35 % de la ventana de su borde superior (ScrollTrigger "pantallas"); las secciones más altas se leen libres.
   Tipografía del hero y nav: MISMOS tamaños que el original (título clamp(40px,4vw,68px) peso 500; subtítulo
   clamp(24px,2.5vw,36px); menú peso 200 clamp(14px,1.5vw,20px) con subrayado celeste; logo 40 px / 20 px mobile).
 Las dos animaciones son SECUENCIAS DE FRAMES dibujadas en <canvas> (js\hero.js, bloque HERO al inicio):
