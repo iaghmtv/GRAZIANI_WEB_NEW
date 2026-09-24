@@ -51,13 +51,21 @@
 
   /* ---------- Nav: blanco sobre fondos oscuros, azul sobre claros (según lo que pasa bajo el logo) ---------- */
   const setNavTheme = (t) => nav && nav.classList.toggle("nav--light", t === "light");
-  const themed = document.querySelectorAll("[data-nav]");
-  if (nav && themed.length && "IntersectionObserver" in window) {
-    // observa una franja de 1 px a la altura del logo (48 px del borde superior)
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) setNavTheme(e.target.dataset.nav); });
-    }, { rootMargin: "-48px 0px -98% 0px", threshold: 0 });
-    themed.forEach((el) => io.observe(el));
+  const themed = [...document.querySelectorAll("[data-nav]")];
+  const LINEA_LOGO = 48;                       // altura del logo: manda la sección que pasa por esa línea
+  const actualizarNav = () => {
+    for (const el of themed) {
+      const r = el.getBoundingClientRect();
+      if (r.top <= LINEA_LOGO && r.bottom > LINEA_LOGO) { setNavTheme(el.dataset.nav); return; }
+    }
+  };
+  if (nav && themed.length) {
+    // chequeo directo por scroll (una vez por frame): no se pierde en saltos largos como un IntersectionObserver
+    let pendiente = false;
+    const pedir = () => { if (!pendiente) { pendiente = true; requestAnimationFrame(() => { pendiente = false; actualizarNav(); }); } };
+    window.addEventListener("scroll", pedir, { passive: true });
+    window.addEventListener("resize", pedir);
+    actualizarNav();
   }
 
   /* ---------- Secuencia de frames dibujada en un canvas (contain o cover) ---------- */
@@ -283,7 +291,7 @@
     // Prueba automática del snap (navegador headless, donde no corre requestAnimationFrame):
     // se empuja el reloj de GSAP y el ScrollTrigger a mano; tres scrolls cortos, el resultado va al <title>
     gsap.ticker.lagSmoothing(0);
-    setInterval(() => { ScrollTrigger.update(); gsap.ticker.tick(); }, 16);
+    setInterval(() => { ScrollTrigger.update(); gsap.ticker.tick(); actualizarNav(); }, 16);
     // pasos: número = scrollBy relativo; {sel, off} = scrollTo al borde de esa sección más un desplazamiento
     const pasos = [120, 100, -90, { sel: "#origen", off: -120 }, { sel: "#calidad", off: 140 }];
     const res = [];
