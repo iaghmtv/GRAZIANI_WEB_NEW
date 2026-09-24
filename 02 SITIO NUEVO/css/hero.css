@@ -17,9 +17,10 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
-  --bottle-h: 78vh;
+  --bottle-h: 86vh;          /* el frame trae margen: la botella visible queda ~80vh, como el original */
 }
 
+@font-face { font-family: "Montserrat"; font-weight: 200; font-style: normal; font-display: swap; src: url("../fonts/montserratextralight.ttf") format("truetype"); }
 @font-face { font-family: "Montserrat"; font-weight: 300; font-style: normal; font-display: swap; src: url("../fonts/montserratlight.ttf") format("truetype"); }
 @font-face { font-family: "Montserrat"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/montserratregular.ttf") format("truetype"); }
 @font-face { font-family: "Montserrat"; font-weight: 500; font-style: normal; font-display: swap; src: url("../fonts/montserratmedium.ttf") format("truetype"); }
@@ -40,50 +41,65 @@ img { display: block; max-width: 100%; }
 /* --------------------------------------------------------------------------
    Nav (píldora translúcida, como el sitio actual)
    -------------------------------------------------------------------------- */
+/* Medidas del original: nav a 35 px del borde y 60 px del lado, píldora radio 8, logo de 40 px */
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 18px 28px;
+  padding: 35px 60px 0;
   pointer-events: none;
 }
 .nav__links {
   display: flex;
-  gap: 22px;
-  padding: 10px 22px;
-  border-radius: 999px;
-  background: rgba(16, 34, 52, 0.38);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  gap: clamp(5px, 1vw, 15px);
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: rgba(10, 29, 54, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   pointer-events: auto;
-  max-width: calc(100vw - 32px);
+  max-width: 75%;
   overflow-x: auto;
   scrollbar-width: none;
 }
 .nav__links::-webkit-scrollbar { display: none; }
 .nav__links a {
+  position: relative;
+  display: inline-block;
   color: #fff;
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
+  font-weight: 200;
+  font-size: clamp(14px, 1.5vw, 20px);
+  padding: 5px clamp(5px, 1vw, 10px);
   white-space: nowrap;
-  opacity: 0.88;
-  transition: opacity 160ms var(--ease-out), color 220ms var(--ease-out);
+  transition: color 220ms var(--ease-out);
+}
+/* subrayado del original (celeste), más rápido */
+.nav__links a::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -4px;
+  width: 0;
+  height: 5px;
+  background: #009fe3;
+  transition: width 320ms var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
-  .nav__links a:hover { opacity: 1; }
+  .nav__links a:hover::after { width: calc(100% - 20px); }
 }
 .nav__brand {
   position: relative;
   display: block;
-  height: 22px;
+  height: 40px;
   pointer-events: auto;
 }
 .nav__logo {
-  height: 22px;
+  height: 40px;
   width: auto;
   transition: opacity 220ms var(--ease-out);
 }
@@ -137,33 +153,32 @@ img { display: block; max-width: 100%; }
 
 .hero__copy {
   position: absolute;
-  left: clamp(24px, 7vw, 120px);
+  left: 15%;                 /* como el .text-container original (padding-left: 15 %) */
   top: 50%;
   transform: translateY(-50%);
-  max-width: 34rem;
+  max-width: 40rem;
   z-index: 2;
 }
 .hero__copy--b { opacity: 0; visibility: hidden; }
 
+/* Tipografía del hero: mismos tamaños y pesos que el sitio original (.main-text / .secondary-text) */
 .hero h1,
 .hero h2 {
-  margin: 0 0 18px;
-  font-weight: 300;
-  font-size: clamp(2.4rem, 5.6vw, 5.4rem);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+  margin: 0 0 30px;
+  font-weight: 500;
+  font-size: clamp(40px, 4vw, 68px);
+  line-height: 1.1;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 .hero h1 strong,
 .hero h2 strong { font-weight: 500; }
 .hero p {
   margin: 0;
-  max-width: 28rem;
-  font-size: clamp(1rem, 1.25vw, 1.2rem);
-  line-height: 1.5;
-  opacity: 0.9;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
+  max-width: 30rem;
+  font-weight: 400;
+  font-size: clamp(24px, 2.5vw, 36px);
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 .eyebrow {
   display: inline-block;
@@ -184,10 +199,10 @@ img { display: block; max-width: 100%; }
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 6vh;
+  bottom: 4vh;
   display: flex;
   justify-content: flex-end;
-  padding-right: clamp(24px, 12vw, 220px);
+  padding-right: 17vw;       /* centro de la botella ~75 % del ancho, como en el original */
   pointer-events: none;
   z-index: 1;
 }
@@ -311,9 +326,10 @@ img { display: block; max-width: 100%; }
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
   :root { --bottle-h: 52vh; }
-  .nav { padding: 12px 14px; gap: 10px; }
-  .nav__links { gap: 14px; padding: 8px 14px; }
-  .nav__logo { height: 18px; }
+  .nav { padding: 35px 30px 0; gap: 10px; }
+  .nav__links { gap: 6px; padding: 8px 12px; max-width: calc(100% - 90px); }
+  .nav__links a { font-size: 14px; padding: 4px 6px; }
+  .nav__brand, .nav__logo { height: 20px; }   /* mobile del original */
   .hero__copy {
     left: 20px;
     right: 20px;
@@ -322,8 +338,8 @@ img { display: block; max-width: 100%; }
     max-width: none;
   }
   .hero h1,
-  .hero h2 { font-size: clamp(2rem, 9vw, 3rem); margin-bottom: 12px; }
-  .hero p { font-size: 0.98rem; }
+  .hero h2 { font-size: 35px; margin-bottom: 16px; }   /* valores mobile del original */
+  .hero p { font-size: 20px; }
   .hero__scrim {
     background:
       linear-gradient(180deg, rgba(8, 24, 44, 0.6) 0%, rgba(8, 24, 44, 0.25) 40%, rgba(8, 24, 44, 0) 60%);

@@ -20,13 +20,14 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v005.blend"   # v005: giro con ease-in-out fuerte + motion blur (barrido), etiqueta Eco con contraste
-GIRO_EASE = "CUBIC"        # curva del giro: arranca y termina suave, 3x la velocidad media a los 180° (cruce de etiquetas)
-SHUTTER = 0.85             # motion blur: fracción del frame que expone (barrido en la parte rápida)
+BLEND_OUT = BASE + "/giro_botella_v006.blend"   # v006: TRES vueltas con ease-in-out + motion blur pleno (fluido)
+VUELTAS = 3                # vueltas completas en los 120 frames (el dorso mira a cámara a los 540°, en la parte rápida)
+GIRO_EASE = "CUBIC"        # curva del giro: arranca y termina suave, 3x la velocidad media en el medio
+SHUTTER = 1.0              # motion blur: expone el frame completo (barrido continuo, sin estrobo entre frames)
 TAPA_ECO_ALTO = 0.66      # la tapa Eco es "short": 66 % del alto de la tapa Clara (referencia: render par de junio)
 COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)   # negra
 FRAMES = 120
-SWAP = (57, 64)            # cruce agua -> eco: centrado en los 180° (frame 60.5), en la parte más rápida del giro
+SWAP = (59, 62)            # cruce agua -> eco: centrado en el frame 60.5 (dorso a cámara), en la parte más rápida del giro
 RES = (800, 2000)          # encuadre vertical, igual que el placeholder web (giro_###.webp)
 SAMPLES_FULL, SAMPLES_TEST = 64, 24   # con denoise, 64 alcanza para web (~10 s/frame en RTX 4090)
 
@@ -241,7 +242,7 @@ etiqueta.data.materials.append(mat_et)
 # ---------------------------------------------------------------- giro 0 -> 360°
 bot.rotation_euler = (0.0, 0.0, 0.0)
 bot.keyframe_insert("rotation_euler", index=2, frame=1)
-bot.rotation_euler = (0.0, 0.0, math.tau)
+bot.rotation_euler = (0.0, 0.0, VUELTAS * math.tau)
 bot.keyframe_insert("rotation_euler", index=2, frame=FRAMES)
 for fc in bot.animation_data.action.fcurves:
     for kp in fc.keyframe_points:
