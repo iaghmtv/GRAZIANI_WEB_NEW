@@ -1,0 +1,23 @@
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^aguasgraziani\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.aguasgraziani\.com$
+RewriteRule ^/?$ "http\:\/\/hidraembotelladora\.com\/" [R=301,L]
+
+<Files 403.shtml>
+order allow,deny
+allow from all
+</Files>
+
+deny from 4.216.120.103
+deny from 164.92.107.174
+deny from 134.122.28.88
+deny from 128.199.182.55
+deny from 103.196.9.243
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php80” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php80 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

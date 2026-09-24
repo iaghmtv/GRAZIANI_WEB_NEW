@@ -1,0 +1,315 @@
+/* ==========================================================================
+   GRAZIANI — Hero animado (prototipo)
+   Tokens tomados del sitio actual (styles.css): azul #265c7f, celeste #f1f9fd,
+   gris texto #3a3737. Verde tomado de la etiqueta Eco Agua.
+   ========================================================================== */
+
+:root {
+  --azul: #265c7f;
+  --azul-2: #436694;
+  --azul-oscuro: #154b7a;
+  --celeste-bg: #f1f9fd;
+  --gris-texto: #3a3737;
+  --verde-eco: #3fb56a;
+  --blanco: #ffffff;
+
+  /* Curvas fuertes (las nativas son flojas) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  --bottle-h: 78vh;
+}
+
+@font-face { font-family: "Montserrat"; font-weight: 300; font-style: normal; font-display: swap; src: url("../fonts/montserratlight.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/montserratregular.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 500; font-style: normal; font-display: swap; src: url("../fonts/montserratmedium.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/montserratsemibold.ttf") format("truetype"); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--gris-texto);
+  background: var(--celeste-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { display: block; max-width: 100%; }
+
+/* --------------------------------------------------------------------------
+   Nav (píldora translúcida, como el sitio actual)
+   -------------------------------------------------------------------------- */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  pointer-events: none;
+}
+.nav__links {
+  display: flex;
+  gap: 22px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: rgba(16, 34, 52, 0.38);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: auto;
+  max-width: calc(100vw - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav__links::-webkit-scrollbar { display: none; }
+.nav__links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0.88;
+  transition: opacity 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav__links a:hover { opacity: 1; }
+}
+.nav__brand { pointer-events: auto; }
+.nav__logo {
+  height: 22px;
+  width: auto;
+  filter: drop-shadow(0 1px 10px rgba(0, 0, 0, 0.3));
+}
+
+/* --------------------------------------------------------------------------
+   Hero (sección pineada; GSAP anima SOLO a los hijos, nunca a .hero)
+   -------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  height: 100vh; /* en celulares equivale al viewport grande: pineado no deja franja al ocultarse la barra */
+  overflow: hidden;
+  background: #0f2438;
+  color: #fff;
+}
+
+/* Fondo más alto que el viewport: deja recorrido para "bajar la toma" */
+.hero__bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 130%;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+/* Velo para legibilidad del texto sobre la nieve */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(8, 24, 44, 0.55) 0%, rgba(8, 24, 44, 0.18) 45%, rgba(8, 24, 44, 0) 70%),
+    linear-gradient(180deg, rgba(8, 24, 44, 0.35) 0%, rgba(8, 24, 44, 0) 32%);
+}
+
+.hero__copy {
+  position: absolute;
+  left: clamp(24px, 7vw, 120px);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 34rem;
+  z-index: 2;
+}
+.hero__copy--b { opacity: 0; visibility: hidden; }
+
+.hero h1,
+.hero h2 {
+  margin: 0 0 18px;
+  font-weight: 300;
+  font-size: clamp(2.4rem, 5.6vw, 5.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+}
+.hero h1 strong,
+.hero h2 strong { font-weight: 500; }
+.hero p {
+  margin: 0;
+  max-width: 28rem;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.5;
+  opacity: 0.9;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
+}
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9f2d8;
+  background: rgba(63, 181, 106, 0.18);
+  border: 1px solid rgba(63, 181, 106, 0.4);
+}
+
+/* Botella: wrapper flex para centrar en mobile sin transforms (GSAP usa el transform de .hero__stage) */
+.hero__stagewrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6vh;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: clamp(24px, 12vw, 220px);
+  pointer-events: none;
+  z-index: 1;
+}
+.hero__stage {
+  position: relative;
+  height: var(--bottle-h);
+  aspect-ratio: 1700 / 5280; /* encuadre de los recortes botella-*.webp */
+  perspective: 1800px;
+  will-change: transform;
+}
+.hero__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -1.5%;
+  width: 150%;
+  height: 5%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0) 68%);
+  filter: blur(6px);
+}
+.flip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.flip__face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip__face--back { transform: rotateY(180deg); }
+
+/* Secuencias de frames (canvas). Se activan con .has-giro / .has-cord desde hero.js.
+   .hero__bgseq vive DENTRO de .hero__bg (130 % de alto): hereda el paneo de "bajar la toma". */
+.hero__seq,
+.hero__bgseq {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+.hero.has-giro .hero__seq { display: block; }
+.hero.has-giro .flip { display: none; }
+.hero.has-cord .hero__bgseq { display: block; }
+
+.hero__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  z-index: 2;
+}
+.hero__hint::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 28px;
+  margin: 10px auto 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+}
+
+/* Estado estático: reduced-motion o sin GSAP. Muestra el resultado final (Eco Agua). */
+.hero.is-static .hero__copy--a,
+.hero.is-static .hero__hint { display: none; }
+.hero.is-static .hero__copy--b { opacity: 1; visibility: visible; }
+.hero.is-static .flip { transform: rotateY(180deg); }
+
+/* --------------------------------------------------------------------------
+   Secciones siguientes (placeholder para que el paneo "aterrice" en algo)
+   -------------------------------------------------------------------------- */
+.section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(64px, 10vw, 140px) clamp(24px, 7vw, 120px);
+}
+.section h2 {
+  margin: 0 0 32px;
+  font-weight: 300;
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--azul);
+}
+.section p {
+  margin: 0 0 20px;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+.section--aviso {
+  text-align: center;
+  color: var(--azul-2);
+  font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  :root { --bottle-h: 52vh; }
+  .nav { padding: 12px 14px; gap: 10px; }
+  .nav__links { gap: 14px; padding: 8px 14px; }
+  .nav__logo { height: 18px; }
+  .hero__copy {
+    left: 20px;
+    right: 20px;
+    top: 13vh;
+    transform: none;
+    max-width: none;
+  }
+  .hero h1,
+  .hero h2 { font-size: clamp(2rem, 9vw, 3rem); margin-bottom: 12px; }
+  .hero p { font-size: 0.98rem; }
+  .hero__scrim {
+    background:
+      linear-gradient(180deg, rgba(8, 24, 44, 0.6) 0%, rgba(8, 24, 44, 0.25) 40%, rgba(8, 24, 44, 0) 60%);
+  }
+  .hero__stagewrap { justify-content: center; padding-right: 0; bottom: 5vh; }
+  .cols { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__links a { transition: none; }
+}

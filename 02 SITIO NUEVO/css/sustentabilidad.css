@@ -1,0 +1,327 @@
+@font-face {
+  font-family: "Blackbird";
+  src: url("../fonts/blackbird.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratregular.ttf") format("truetype"), url("../fonts/montserratregular.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratitalic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratbold.ttf") format("truetype"), url("../fonts/montserratbold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratbolditalic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratlight.ttf") format("truetype"), url("../fonts/montserratlight.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratlightitalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratblack.ttf") format("truetype"), url("../fonts/montserratblack.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserratblackitalic.ttf") format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+/* Añade más @font-face para las otras variantes de Montserrat si las necesitas */
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Montserrat", sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.box {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+#sustentabilidadbox {
+  background-image: url("../assets/fondos/sustentabilidad.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Alinear el contenido al principio */
+  align-items: center;
+  padding-bottom: 50px;
+  padding-top: 100px; /* Ajustar según sea necesario */
+}
+
+.origen-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.origen-title {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  text-align: center;
+  padding: 40px 0;
+  margin-bottom: 20px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 45px;
+  color: white;
+  letter-spacing: 5px; /* Eliminar el espaciado entre letras */
+}
+
+.origen-section {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800; /* extrabold */
+  font-size: 45px;
+  letter-spacing: 5px;
+  color: white;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  justify-content: center;
+}
+
+.card {
+  background-color: rgba(0, 0, 0, 0);
+  border: white 1px solid;
+  padding: 20px;
+  border-radius: 10px;
+  width: calc(100% - 40px);
+  max-width: 540px;
+  margin: 0 auto;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card h3 {
+  padding-top: 30px;
+  margin-top: 0;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 38px;
+  color: white;
+  margin-bottom: 15px;
+  letter-spacing: normal;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.card p {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: white;
+  line-height: 1.4;
+  text-align: left;
+  letter-spacing: normal;
+}
+
+/* Estilos para los nuevos contenedores dobles */
+.card-double {
+  grid-column: span 2;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-double h3 {
+  font-size: 42px;
+}
+
+.card-double p {
+  padding-right: 60px;
+  margin-bottom: 20px;
+}
+
+/* Reemplazar los estilos del botón view-file-btn con estos nuevos estilos */
+.view-file-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  letter-spacing: 2px;
+  border: none; /* Eliminamos el borde */
+  color: white;
+  padding: 8px 0; /* Quitamos el padding horizontal */
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: auto;
+  padding-right: 30px;
+  margin-left: auto; /* Alinea el botón a la derecha */
+  width: fit-content;
+  text-decoration: none; /* Eliminamos el subrayado */
+  transition: transform 0.3s; /* Solo transición para el cambio de tamaño */
+}
+
+.view-file-btn:hover {
+  transform: scale(1.05); /* Aumentamos ligeramente el tamaño al hacer hover */
+  background-color: transparent; /* Mantenemos el fondo transparente */
+  color: white; /* Mantenemos el color del texto */
+}
+
+.view-file-btn img {
+  margin-left: 8px;
+  width: 30px;
+  height: 30px;
+}
+
+.content-columns {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.left-column,
+.right-column {
+  flex: 1;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 300; /* light */
+  font-size: 24px;
+  color: white;
+  text-align: left;
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+.origen-content {
+  text-align: center;
+}
+
+.origen-content h2 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800; /* extrabold */
+  font-size: 45px;
+  color: #265c7f;
+  margin-bottom: 20px;
+  letter-spacing: 4px;
+}
+
+.origen-subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500; /* medium */
+  font-size: 30px;
+  color: black;
+  margin-bottom: 30px;
+}
+
+.box:nth-child(2),
+.box:nth-child(3),
+.box:nth-child(4),
+.box:nth-child(5) {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    width: 90%;
+    padding: 0 20px;
+  }
+
+  .logo {
+    position: static;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .origen-title {
+    font-size: 32px;
+    position: static;
+    margin-bottom: 30px;
+    padding-left: 2px;
+  }
+
+  .box:first-child {
+    padding-top: 200px;
+  }
+  .card h3 {
+    font-size: 28px;
+  }
+
+  .card-double {
+    grid-column: span 1;
+  }
+  .card-double p {
+    padding-right:0;
+    
+  }
+  .view-file-btn img {
+    padding-right: 20px;
+    width: 22px;
+    height: 22px;
+  }
+}

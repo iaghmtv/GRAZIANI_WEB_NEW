@@ -1,0 +1,278 @@
+@font-face {
+    font-family: "Blackbird";
+    src: url("../fonts/blackbird.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratregular.ttf") format("truetype"), url("../fonts/montserratregular.otf")
+      format("opentype");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratitalic.ttf") format("truetype");
+    font-weight: normal;
+    font-style: italic;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratbold.ttf") format("truetype"), url("../fonts/montserratbold.otf") format("opentype");
+    font-weight: bold;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratbolditalic.ttf") format("truetype");
+    font-weight: bold;
+    font-style: italic;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratlight.ttf") format("truetype"), url("../fonts/montserratlight.otf") format("opentype");
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratlightitalic.ttf") format("truetype");
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratblack.ttf") format("truetype"), url("../fonts/montserratblack.otf") format("opentype");
+    font-weight: 900;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserratblackitalic.ttf") format("truetype");
+    font-weight: 900;
+    font-style: italic;
+  }
+  
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Montserrat", sans-serif;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  #origenbox {
+    background-image: url("../assets/fondos/cascadaorigen.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 50px;
+  }
+  
+  .origen-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .box:nth-child(odd) {
+    background-color: transparent;
+  }
+  
+  .box:nth-child(even) {
+    background-color: #2ecc71;
+  }
+  
+  .origen-title {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    text-align: center;
+    padding-top: 0;
+    padding-bottom: 30px;
+    margin-bottom: 0;
+    font-family: "Montserrat", sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 45px;
+    color: white;
+    letter-spacing: 5px;
+  }
+  
+  .origen-section {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 800;
+    font-size: 45px;
+    letter-spacing: 5px;
+    color: white;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  /* Ajustar el contenedor principal para asegurar que respete los márgenes */
+  .cards-grid {
+    display: block;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box; /* Asegura que el padding no se sume al ancho */
+  }
+  
+  .card {
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 150px 60px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box; /* Asegura que el padding no se sume al ancho */
+  }
+  
+  .card-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  
+  .l-column,
+  .r-column {
+    flex: 1;
+  }
+  
+  .card p {
+    font-family: "Montserrat", sans-serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-size: 26px;
+    color: black;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .box:nth-child(2),
+  .box:nth-child(3),
+  .box:nth-child(4),
+  .box:nth-child(5) {
+    display: none !important;
+  }
+  
+  /* Media queries mejorados */
+  @media (max-width: 1200px) {
+    .cards-grid {
+      padding: 0 15px;
+      max-width: 100%;
+    }
+  
+    .card {
+      padding: 100px 40px;
+      margin: 0 15px; /* Añadir margen para evitar que toque los bordes */
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .card {
+      padding: 80px 30px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .cards-grid {
+      padding: 0 10px;
+    }
+  
+    .card {
+      padding: 50px 25px;
+      margin: 0 10px;
+    }
+  
+    .card-content {
+      flex-direction: column;
+      gap: 30px;
+    }
+  
+    .card p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
+  
+    .origen-title {
+      font-size: 32px;
+      padding-top: 60px;
+      padding-bottom: 30px;
+    }
+  
+    .origen-section {
+      font-size: 32px;
+      padding: 15px;
+    }
+  
+    .logo {
+      position: static;
+      text-align: center;
+      padding: 20px 0;
+    }
+  
+    .box:first-child {
+      padding-top: 80px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .cards-grid {
+      padding: 0 5px;
+    }
+  
+    .card {
+      padding: 30px 20px;
+      margin: 0 5px;
+    }
+  
+    .card p {
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  
+    .origen-title {
+      font-size: 28px;
+      letter-spacing: 3px;
+    }
+  }
+  
+  
+  

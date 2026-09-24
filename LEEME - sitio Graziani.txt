@@ -1,0 +1,76 @@
+SITIO WEB GRAZIANI / HIDRA EMBOTELLADORA
+========================================
+Actualizado: 2026-09-23 (tarde)
+
+CARPETAS
+--------
+E:\GRACIANI\WEB GRAZIANI\01 SITIO ORIGINAL (backup FTP 2026-09-23)\public_html\
+    Copia EXACTA del servidor bajada por FTP-TLS el 2026-09-23 (130 archivos, 36,3 MB, tamaños verificados,
+    fechas del servidor conservadas). NO TOCAR: es el respaldo.
+
+E:\GRACIANI\WEB GRAZIANI\02 SITIO NUEVO\
+    Copia de trabajo (arrancó como copia de 01). Se prueba local con el servidor de .claude\launch.json
+    (http://localhost:8765). Cuando esté aprobada, se sube por FTP a /public_html.
+    Novedades:
+      hero.html + css\hero.css + js\hero.js   -> HERO NUEVO animado por scroll (ver abajo)
+      assets\hero\                           -> fondo cordillera, botellas recortadas, secuencia giro\
+      js\productos.js                        -> +Eco Agua (primera categoría) +3 saborizadas 2 L (Notion)
+      assets\botellas\*.webp, assets\popups\*.jpg -> imágenes y fichas de los 4 productos nuevos
+      index/origen/sustentabilidad.html      -> categoría "Eco Agua" en el nav de productos; alts de redes corregidos
+      css\styles.css, origen.css, sustentabilidad.css -> rutas de fuentes corregidas
+
+E:\GRACIANI\WEB GRAZIANI\03 BLENDER GIRO BOTELLA\
+    01_preparar_insumos.py    (python normal) perfil de revolución desde la silueta + etiquetas desenrolladas -> insumos\
+    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v001.blend y renderiza
+    03_exportar_frames_web.py (python normal) render\giro_####.png -> 02 SITIO NUEVO\assets\hero\giro\giro_###.webp
+    Correr desde esta carpeta:
+      "C:\Program Files\Blender Foundation\Blender 4.5\blender.exe" -b -P 02_construir_escena.py -- --test    (3 frames de prueba)
+      "C:\Program Files\Blender Foundation\Blender 4.5\blender.exe" -b -P 02_construir_escena.py -- --render  (120 frames)
+    Para retocar el look (luces, materiales, cámara) editar 02_construir_escena.py o abrir el .blend y guardar como v002.
+
+E:\GRACIANI\WEB GRAZIANI\04 COMFYUI CORDILLERA\
+    wan22_i2v_cordillera_api.json  workflow Wan 2.2 I2V 14B (4 pasos lightx2v), 1280x720, 81 frames, guarda PNG
+    encolar_wan.py                 lo manda a ComfyUI (tiene que estar abierto: E:\ComfyUI_portable\run_portable_8188.bat)
+    extraer_frames.py              PNG o MP4 -> 02 SITIO NUEVO\assets\hero\cordillera\cord_###.webp
+    La foto de entrada ya está copiada en C:\Users\Urano\Documents\ComfyUI\input\cordillera_graziani.jpg
+    HECHO 2026-09-23: dos generaciones en la carpeta salida (frames_20260923 = drift sutil; frames_7 = cámara bajando, ES LA USADA).
+    Clave del prompt: describir el movimiento como resultado visible ("el horizonte sale por arriba, el valle entra por abajo"),
+    no solo "tilt down". Otra variante: python encolar_wan.py --seed N --prompt "..." y después extraer_frames.py <carpeta>.
+
+E:\GRACIANI\WEB GRAZIANI\11 AJUSTE PRODUCTOS WEB\
+    = "Servidor 3" del Notion: PNG 6000 px de Eco Agua (alpha + capa reflejo), Agua 500 con/sin gotas,
+    saborizadas 2 L, fichas JPG 1080x1920 en la raíz, PRODUCTOS WEB 01.ai (es la maqueta de la sección Productos).
+
+E:\GRACIANI\WEB GRAZIANI\00 HERRAMIENTAS\
+    ftp_inventario.py / ftp_bajar_backup.py (leen el .ENV). inventario.json del servidor.
+
+E:\GRACIANI\WEB GRAZIANI\GRAZIANI WEB DATA.ENV
+    Accesos cPanel/FTP (no compartir, no subir a git).
+
+HERO NUEVO (02 SITIO NUEVO\hero.html)
+--------------------------------------
+Sección pineada con GSAP ScrollTrigger, estilo Apple: scrub + SNAP a tres encuadres (un toque de rueda salta
+al encuadre siguiente, y hacia atrás también).
+  Encuadre 1 (0.0): cordillera + botella Clara 500 + "El espíritu de Los Andes hecho agua"
+  Encuadre 2 (0.5): la botella GIRÓ y es Eco Agua + "La misma agua. Nueva botella."
+  Encuadre 3 (1.0): la cámara BAJA la toma (paralaje), la botella se va con el paisaje, sigue Quiénes somos
+Las dos animaciones son SECUENCIAS DE FRAMES dibujadas en <canvas> (js\hero.js, bloque HERO al inicio):
+  giro:       assets\hero\giro\giro_###.webp        <- render de Blender (03). HERO.giro.frames = 120 (hecho)
+  cordillera: assets\hero\cordillera\cord_###.webp  <- clip de ComfyUI (04).  HERO.cordillera.frames = 81 (hecho; 0 = paneo CSS de la foto)
+Reduced motion: sin pin ni scrub, muestra el estado final. Depuración: hero.html?debug (marcadores) y ?frame=0.5 (fija un encuadre).
+
+PENDIENTES
+----------
+- (hecho) Clip de la cordillera: 81 frames de ComfyUI ya integrados (HERO.cordillera.frames = 81).
+- Peso del hero: 120 + 81 frames WebP = ~18 MB. Para producción: AVIF, menos frames (60/41) o versión liviana para celular.
+- Hoja de contacto de los encuadres finales: E:\GRACIANI\WEB GRAZIANI\02 SITIO NUEVO\hero_encuadres_2026-09-23.jpg
+- Ajustar el look del render (tapa, reflejos) si hace falta, y renderizar a más samples para la versión final.
+- Si aparecen las etiquetas planas (archivos de imprenta), reemplazar insumos\etiqueta_*.png: mejora mucho el dorso.
+- Integrar el hero en index.html y rehacer el resto de secciones (Productos con la maqueta del Servidor 3, Calidad, Contacto).
+- Formulario de contacto: hoy no envía nada; hace falta un servicio o un PHP en el hosting.
+- Versión portrait del clip de cordillera para celulares (hoy se recorta el de 16:9).
+
+PROBLEMAS DEL ORIGINAL (para no olvidar)
+----------------------------------------
+Form de contacto sin action ni JS; 21,7 MB de archivos huérfanos; sin SEO/favicon; textos con <br> forzados;
+3 páginas copiadas y pegadas; políticas como texto plano; Blackbird declarada pero sin uso.

@@ -1,0 +1,30 @@
+# ===== Credenciales: NUNCA al repo =====
+*.ENV
+*.env
+GRAZIANI WEB DATA.ENV
+
+# ===== Respaldo del servidor y fuentes pesadas (quedan solo en local) =====
+01 SITIO ORIGINAL*/
+11 AJUSTE PRODUCTOS WEB/
+
+# ===== Blender: se versionan scripts, insumos y el .blend; no los renders =====
+03 BLENDER GIRO BOTELLA/render/
+03 BLENDER GIRO BOTELLA/render_test/
+03 BLENDER GIRO BOTELLA/*.blend1
+03 BLENDER GIRO BOTELLA/*.log
+
+# ===== ComfyUI: se versionan workflow y scripts; no las salidas (PNG) ni logs =====
+04 COMFYUI CORDILLERA/salida/
+04 COMFYUI CORDILLERA/*.log
+
+# ===== Inventarios y herramientas locales =====
+00 HERRAMIENTAS/inventario.json
+.claude/
+
+# ===== Basura de sistema =====
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+__pycache__/
+*.pyc

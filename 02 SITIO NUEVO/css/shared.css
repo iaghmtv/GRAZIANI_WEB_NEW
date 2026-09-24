@@ -1,0 +1,42 @@
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+    position: relative;
+    z-index: 1;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.nav-links {
+    z-index: 1000;
+}
+
+.hamburger {
+    z-index: 1001;
+}
+
+.logo {
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        background-color: #436694;
+    }
+
+    .nav-header {
+        z-index: 1000;
+    }
+}
+
