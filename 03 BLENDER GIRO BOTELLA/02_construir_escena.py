@@ -20,7 +20,9 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v001.blend"
+BLEND_OUT = BASE + "/giro_botella_v003.blend"   # v003: tapa aparte (azul alta -> negra corta) + gotas + AgX
+TAPA_ECO_ALTO = 0.66      # la tapa Eco es "short": 66 % del alto de la tapa Clara (referencia: render par de junio)
+COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)   # negra
 FRAMES = 120
 SWAP = (55, 65)            # cruce agua -> eco (la etiqueta mira al dorso alrededor del frame 60)
 RES = (800, 2000)          # encuadre vertical, igual que el placeholder web (giro_###.webp)
@@ -59,24 +61,39 @@ def keyframe_swap(socket):
     socket.default_value = 1.0
     socket.keyframe_insert("default_value", frame=SWAP[1])
 
-# ---------------------------------------------------------------- botella (sólido de revolución)
-verts = [(0.0, 0.0, perfil[0][0])] + [(r, 0.0, z) for z, r in perfil] + [(0.0, 0.0, perfil[-1][0])]
-edges = [(i, i + 1) for i in range(len(verts) - 1)]
-mesh = bpy.data.meshes.new("PerfilBotella")
-mesh.from_pydata(verts, edges, [])
-bot = bpy.data.objects.new("Botella", mesh)
-scene.collection.objects.link(bot)
-bpy.context.view_layer.objects.active = bot
-bot.select_set(True)
-screw = bot.modifiers.new("Screw", "SCREW")
-screw.axis = "Z"; screw.angle = math.tau; screw.steps = 128; screw.render_steps = 128
-screw.screw_offset = 0.0; screw.iterations = 1
-screw.use_merge_vertices = True; screw.merge_threshold = 1e-5; screw.use_smooth_shade = True
-bpy.ops.object.modifier_apply(modifier="Screw")
-try:
-    bpy.ops.object.shade_smooth_by_angle(angle=math.radians(40))
-except Exception:
-    bpy.ops.object.shade_smooth()
+# ---------------------------------------------------------------- sólidos de revolución: botella (sin tapa) y tapa aparte
+def lathe(nombre, puntos_zr, z_ini, z_fin):
+    """Cuerpo de revolución cerrado en el eje: (0,0,z_ini) -> perfil -> (0,0,z_fin)."""
+    vs = [(0.0, 0.0, z_ini)] + [(r, 0.0, z) for z, r in puntos_zr] + [(0.0, 0.0, z_fin)]
+    es = [(i, i + 1) for i in range(len(vs) - 1)]
+    m = bpy.data.meshes.new("Perfil" + nombre); m.from_pydata(vs, es, [])
+    o = bpy.data.objects.new(nombre, m); scene.collection.objects.link(o)
+    bpy.ops.object.select_all(action="DESELECT"); o.select_set(True); bpy.context.view_layer.objects.active = o
+    sc = o.modifiers.new("Screw", "SCREW")
+    sc.axis = "Z"; sc.angle = math.tau; sc.steps = 128; sc.render_steps = 128
+    sc.screw_offset = 0.0; sc.iterations = 1
+    sc.use_merge_vertices = True; sc.merge_threshold = 1e-5; sc.use_smooth_shade = True
+    bpy.ops.object.modifier_apply(modifier="Screw")
+    try:
+        bpy.ops.object.shade_smooth_by_angle(angle=math.radians(40))
+    except Exception:
+        bpy.ops.object.shade_smooth()
+    return o
+
+cuerpo = [(z, r) for z, r in perfil if z < Z_TAPA]
+bot = lathe("Botella", cuerpo, cuerpo[0][0], Z_TAPA)          # sellada arriba (queda dentro de la tapa)
+tapa_pts = [(z, r) for z, r in perfil if z >= Z_TAPA]
+tapa = lathe("Tapa", tapa_pts, Z_TAPA, tapa_pts[-1][0])
+tapa.parent = bot
+# shape key "corta": la tapa Eco es más baja, anclada en su base
+tapa.shape_key_add(name="Basis", from_mix=False)
+sk = tapa.shape_key_add(name="corta", from_mix=False)
+for i in range(len(tapa.data.vertices)):
+    co = sk.data[i].co
+    co.z = Z_TAPA + (co.z - Z_TAPA) * TAPA_ECO_ALTO
+sk.value = 0.0; sk.keyframe_insert("value", frame=SWAP[0])
+sk.value = 1.0; sk.keyframe_insert("value", frame=SWAP[1])
+bpy.ops.object.select_all(action="DESELECT"); bot.select_set(True); bpy.context.view_layer.objects.active = bot
 
 mat_vidrio = bpy.data.materials.new("Vidrio_Agua")
 nt = nodos(mat_vidrio)
@@ -97,20 +114,78 @@ try:
 except KeyError:
     pass
 mix = nt.nodes.new("ShaderNodeMixRGB")
-# los colores medidos en la foto ya incluyen su iluminación: se bajan un 25 % para que el render los devuelva
-ca = [v * 0.75 for v in info["color_tapa_agua"]]
-ce = [v * 0.75 for v in info["color_tapa_eco"]]
-mix.inputs["Color1"].default_value = (ca[0], ca[1], ca[2], 1.0)
-mix.inputs["Color2"].default_value = (ce[0], ce[1], ce[2], 1.0)
+# tapa Clara azul (azul pleno tipo #4A80DB de la referencia; el medido en la foto salía pálido) -> tapa Eco negra
+mix.inputs["Color1"].default_value = (0.10, 0.28, 0.72, 1.0)
+mix.inputs["Color2"].default_value = COLOR_TAPA_ECO
 keyframe_swap(mix.inputs["Fac"])
 nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
 nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
 
 bot.data.materials.append(mat_vidrio)
-bot.data.materials.append(mat_tapa)
-for p in bot.data.polygons:
-    cz = sum(bot.data.vertices[v].co.z for v in p.vertices) / len(p.vertices)
-    p.material_index = 1 if cz >= Z_TAPA else 0
+tapa.data.materials.append(mat_tapa)
+
+# ---------------------------------------------------------------- gotas de condensación (malla propia, hija de la botella)
+# Domos achatados apoyados en la superficie de revolución; giran con la botella y hacen legible el giro.
+import numpy as np
+N_GOTAS = 950
+rng = np.random.default_rng(7)
+zs_p = np.array([z for z, r in perfil]); rs_p = np.array([r for z, r in perfil])
+def radio(z): return float(np.interp(z, zs_p, rs_p))
+def normal_rz(z):
+    dz = 0.0008
+    dr = (radio(z + dz) - radio(z - dz)) / (2 * dz)
+    n = np.array([1.0, -dr]); return n / np.linalg.norm(n)          # (n_r, n_z)
+cands = []
+zmin, zmax = 0.006, Z_TAPA - 0.004
+while len(cands) < N_GOTAS:
+    z = rng.uniform(zmin, zmax)
+    if Z_LAB0 - 0.002 <= z <= Z_LAB1 + 0.002 and rng.random() > 0.12:
+        continue                                                     # pocas gotas sobre la etiqueta
+    r = radio(z)
+    if r < 0.009 or rng.random() > r / rs_p.max():                   # sin gotas en el cuello; densidad ∝ perímetro
+        continue
+    cands.append((z, r, rng.uniform(0.0, math.tau)))
+R_AN, S_SEG = 4, 12
+gv, gf = [], []
+for (z, r, th) in cands:
+    s = rng.uniform(0.00045, 0.0021)                                 # radio de la gota: 0,45–2,1 mm
+    h = rng.uniform(0.35, 0.62)                                      # achatamiento
+    n_r, n_z = normal_rz(z)
+    n3 = np.array([n_r * math.cos(th), n_r * math.sin(th), n_z]); n3 /= np.linalg.norm(n3)
+    t1 = np.array([-math.sin(th), math.cos(th), 0.0]); t2 = np.cross(n3, t1)
+    c = np.array([r * math.cos(th), r * math.sin(th), z]) - n3 * (s * h * 0.35)
+    base = len(gv)
+    gv.append(tuple(c + n3 * (s * h)))                               # polo
+    for i in range(1, R_AN + 1):
+        phi = (math.pi / 2) * i / R_AN
+        for j in range(S_SEG):
+            lam = math.tau * j / S_SEG
+            x, y, zz = math.sin(phi) * math.cos(lam), math.sin(phi) * math.sin(lam), math.cos(phi)
+            gv.append(tuple(c + t1 * (s * x) + t2 * (s * y) + n3 * (s * h * zz)))
+    for j in range(S_SEG):
+        gf.append((base, base + 1 + (j + 1) % S_SEG, base + 1 + j))
+    for i in range(1, R_AN):
+        for j in range(S_SEG):
+            a = base + 1 + (i - 1) * S_SEG + j; b = base + 1 + (i - 1) * S_SEG + (j + 1) % S_SEG
+            c2 = base + 1 + i * S_SEG + (j + 1) % S_SEG; d = base + 1 + i * S_SEG + j
+            gf.append((a, b, c2, d))
+gmesh = bpy.data.meshes.new("GotasMesh"); gmesh.from_pydata(gv, [], gf)
+gotas = bpy.data.objects.new("Gotas", gmesh); scene.collection.objects.link(gotas)
+bpy.ops.object.select_all(action="DESELECT"); gotas.select_set(True); bpy.context.view_layer.objects.active = gotas
+bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT")
+bpy.ops.mesh.normals_make_consistent(inside=False); bpy.ops.object.mode_set(mode="OBJECT")
+bpy.ops.object.shade_smooth()
+gotas.parent = bot
+mat_gota = bpy.data.materials.new("Gota")
+nt = nodos(mat_gota)
+out = nt.nodes.new("ShaderNodeOutputMaterial")
+gl = nt.nodes.new("ShaderNodeBsdfGlass")
+gl.inputs["Color"].default_value = (0.96, 0.99, 1.0, 1.0)
+gl.inputs["Roughness"].default_value = 0.04
+gl.inputs["IOR"].default_value = 1.33
+nt.links.new(gl.outputs["BSDF"], out.inputs["Surface"])
+gotas.data.materials.append(mat_gota)
+print("Gotas:", len(cands))
 
 # ---------------------------------------------------------------- etiqueta (cilindro con UV propio)
 SEG = 128
@@ -188,8 +263,8 @@ def plano_cordillera(nombre, y, ancho, flip, fuerza=0.75):
     p.visible_shadow = False
     return p
 
-fondo = plano_cordillera("Cordillera_Fondo", y=+1.6, ancho=4.0, flip=False, fuerza=0.75)   # detrás: se ve a través del agua
-frente = plano_cordillera("Cordillera_Reflejo", y=-2.2, ancho=5.0, flip=True, fuerza=0.30) # delante: aparece en los reflejos (suave)
+fondo = plano_cordillera("Cordillera_Fondo", y=+1.6, ancho=4.0, flip=False, fuerza=0.55)   # detrás: se ve a través del agua
+frente = plano_cordillera("Cordillera_Reflejo", y=-2.2, ancho=5.0, flip=True, fuerza=0.22) # delante: aparece en los reflejos (suave)
 frente.visible_transmission = False
 frente.visible_diffuse = False
 
@@ -202,7 +277,7 @@ for n in list(wn.nodes):
 wout = wn.nodes.new("ShaderNodeOutputWorld")
 wbg = wn.nodes.new("ShaderNodeBackground")
 wbg.inputs["Color"].default_value = (0.62, 0.76, 0.92, 1.0)
-wbg.inputs["Strength"].default_value = 0.45
+wbg.inputs["Strength"].default_value = 0.35
 wn.links.new(wbg.outputs["Background"], wout.inputs["Surface"])
 
 # ---------------------------------------------------------------- luces y cámara
@@ -219,9 +294,9 @@ def luz(nombre, loc, energia, size, color=(1, 1, 1)):
     c = lo.constraints.new("TRACK_TO"); c.target = target; c.track_axis = "TRACK_NEGATIVE_Z"; c.up_axis = "UP_Y"
     return lo
 
-luz("Key", (-0.7, -0.9, 0.9), 80, 0.9, (1.0, 0.97, 0.93))
-luz("Fill", (0.9, -0.8, 0.4), 28, 1.2, (0.92, 0.96, 1.0))
-luz("Rim", (0.5, 0.9, 0.8), 60, 0.5, (1.0, 1.0, 1.0))
+luz("Key", (-0.7, -0.9, 0.9), 55, 0.9, (1.0, 0.97, 0.93))
+luz("Fill", (0.9, -0.8, 0.4), 20, 1.2, (0.92, 0.96, 1.0))
+luz("Rim", (0.5, 0.9, 0.8), 45, 0.5, (1.0, 1.0, 1.0))
 
 cam_d = bpy.data.cameras.new("Camara")
 cam_d.lens = 100.0
@@ -255,9 +330,13 @@ scene.render.image_settings.file_format = "PNG"
 scene.render.image_settings.color_mode = "RGBA"
 scene.render.image_settings.color_depth = "8"
 scene.render.image_settings.compression = 50
-scene.view_settings.view_transform = "Standard"
+# AgX comprime las altas luces en vez de recortarlas: el vidrio no queda "quemado"
+try:
+    scene.view_settings.view_transform = "AgX"
+except TypeError:
+    scene.view_settings.view_transform = "Filmic"
 scene.view_settings.look = "None"
-scene.view_settings.exposure = -0.6
+scene.view_settings.exposure = -0.35
 scene.frame_start, scene.frame_end = 1, FRAMES
 scene.render.fps = 30
 scene.render.filepath = BASE + "/render/giro_"

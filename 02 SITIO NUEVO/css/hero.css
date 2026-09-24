@@ -71,17 +71,31 @@ img { display: block; max-width: 100%; }
   font-weight: 500;
   white-space: nowrap;
   opacity: 0.88;
-  transition: opacity 160ms var(--ease-out);
+  transition: opacity 160ms var(--ease-out), color 220ms var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
   .nav__links a:hover { opacity: 1; }
 }
-.nav__brand { pointer-events: auto; }
+.nav__brand {
+  position: relative;
+  display: block;
+  height: 22px;
+  pointer-events: auto;
+}
 .nav__logo {
   height: 22px;
   width: auto;
-  filter: drop-shadow(0 1px 10px rgba(0, 0, 0, 0.3));
+  transition: opacity 220ms var(--ease-out);
 }
+.nav__logo--blanco { filter: drop-shadow(0 1px 10px rgba(0, 0, 0, 0.3)); }
+.nav__logo--azul { position: absolute; top: 0; left: 0; opacity: 0; }
+
+/* Sobre fondo claro (secciones con data-nav="light"): logo azul y píldora clara */
+.nav--light .nav__logo--blanco { opacity: 0; }
+.nav--light .nav__logo--azul { opacity: 1; }
+.nav__links { transition: background-color 220ms var(--ease-out); }
+.nav--light .nav__links { background: rgba(255, 255, 255, 0.62); }
+.nav--light .nav__links a { color: var(--azul); }
 
 /* --------------------------------------------------------------------------
    Hero (sección pineada; GSAP anima SOLO a los hijos, nunca a .hero)

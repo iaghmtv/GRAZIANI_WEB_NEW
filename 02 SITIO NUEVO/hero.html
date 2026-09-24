@@ -21,11 +21,12 @@
       <a href="index.html#contacto">Contacto</a>
     </div>
     <a class="nav__brand" href="index.html" aria-label="Graziani, inicio">
-      <img class="nav__logo" src="assets/logo/graziani.png" alt="Graziani">
+      <img class="nav__logo nav__logo--blanco" src="assets/logo/graziani.png" alt="Graziani">
+      <img class="nav__logo nav__logo--azul" src="assets/logo/graziani-azul.png" alt="" aria-hidden="true">
     </a>
   </nav>
 
-  <section class="hero" id="hero" aria-label="Presentación">
+  <section class="hero" id="hero" aria-label="Presentación" data-nav="dark">
     <div class="hero__bg">
       <picture>
         <source media="(max-width: 768px)" srcset="assets/hero/cordillera-mobile.jpg">
@@ -60,7 +61,7 @@
     <div class="hero__hint" aria-hidden="true">Deslizá</div>
   </section>
 
-  <section class="section" id="quienessomos">
+  <section class="section" id="quienessomos" data-nav="light">
     <h2>Quiénes somos</h2>
     <div class="cols">
       <div>
@@ -74,7 +75,7 @@
     </div>
   </section>
 
-  <section class="section section--aviso">
+  <section class="section section--aviso" data-nav="light">
     <p>Prototipo del hero. El resto de las secciones (Productos, Calidad, Contacto) se integran en la siguiente etapa.</p>
   </section>
 
