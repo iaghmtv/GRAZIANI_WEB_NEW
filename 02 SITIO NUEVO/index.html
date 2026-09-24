@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graziani</title>
     <meta name="description" content="Graziani: agua mineral natural de Los Andes. Hidra Embotelladora, San Juan, Argentina.">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/styles.css?v=20260924m">
+    <link rel="stylesheet" href="css/hero.css?v=20260924m">
     <link rel="preload" as="image" href="assets/hero/cordillera.jpg">
 </head>
 <body>
 
     
   <nav class="nav" aria-label="Principal">
-    <div class="nav__links">
+    <button class="nav__burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav__links" id="nav-links">
       <a href="origen.html">El origen</a>
       <a href="#quienessomos">Quiénes somos</a>
       <a href="#productos">Productos</a>
@@ -21,6 +24,7 @@
       <a href="sustentabilidad.html">Sustentabilidad</a>
       <a href="#contacto">Contacto</a>
     </div>
+    <div class="nav__scrim" aria-hidden="true"></div>
     <a class="nav__brand" href="index.html" aria-label="Graziani, inicio">
       <img class="nav__logo nav__logo--blanco" src="assets/logo/graziani.png" alt="Graziani">
       <img class="nav__logo nav__logo--azul" src="assets/logo/graziani-azul.png" alt="" aria-hidden="true">
@@ -532,11 +536,12 @@
         
         
 </body>
-<script src="js/valores.js"></script>
-<script src="js/calidad.js"></script>
-<script src="js/scripts.js"></script>
-<script src="js/productos.js"></script>
+<script src="js/valores.js?v=20260924m"></script>
+<script src="js/calidad.js?v=20260924m"></script>
+<script src="js/scripts.js?v=20260924m"></script>
+<script src="js/productos.js?v=20260924m"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-<script src="js/hero.js"></script>
+<script src="js/nav.js?v=20260924m"></script>
+<script src="js/hero.js?v=20260924m"></script>
 </html>

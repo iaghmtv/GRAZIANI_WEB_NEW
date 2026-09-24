@@ -30,6 +30,10 @@
     },
   };
 
+  // En celular la cordillera va con la foto vertical + paneo: el clip es 16:9 (recortado a vertical queda borroso)
+  // y pesa 10 MB de datos móviles. El giro de la botella sí se mantiene.
+  if (window.matchMedia("(max-width: 768px)").matches) HERO.cordillera.frames = 0;
+
   const hero = document.querySelector(".hero");
   if (!hero) return;
   const $ = (s) => hero.querySelector(s);
@@ -283,6 +287,7 @@
         // simula el scroll del hero saliendo (mueve las secciones, no el html, para que el nav fijo no se desplace)
         gsap.set([hero, ...document.querySelectorAll("[data-nav]:not(.hero)")], { y: -b * window.innerHeight });
       }
+      actualizarNav();   // sin scroll real no hay evento: recalcular el color del logo para la captura
     };
     if (document.readyState === "complete") jump(); else window.addEventListener("load", jump);
   }

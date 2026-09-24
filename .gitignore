@@ -28,3 +28,6 @@ Thumbs.db
 desktop.ini
 __pycache__/
 *.pyc
+
+# ===== Herramientas locales de captura (no se publican) =====
+02 SITIO NUEVO/_captura_movil.html

@@ -20,15 +20,18 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v007.blend"   # v007: etiqueta doble (Clara frente / Eco dorso), 2,5 vueltas: termina de frente en la Eco
-VUELTAS = 2.5              # media vuelta más y quedaría en la Clara: con etiqueta doble hacen falta N + 0,5 vueltas
+BLEND_OUT = BASE + "/giro_botella_v008.blend"   # v008: etiquetas ORIGINALES planas (Clara topaz con calado / Eco 2 tintas),
+                                                # cruce Clara->Eco con el giro rápido, máscara de roughness, 3 vueltas
+VUELTAS = 3                # la Clara arranca de frente, la Eco termina de frente (cruce en el medio): vueltas enteras
 GIRO_EASE = "CUBIC"        # curva del giro: arranca y termina suave, 3x la velocidad media en el medio
 SHUTTER = 1.0              # motion blur: expone el frame completo (barrido continuo, sin estrobo entre frames)
 TAPA_ECO_ALTO = 0.66      # la tapa Eco es "short": 66 % del alto de la tapa Clara (referencia: render par de junio)
-COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)   # negra
+COLOR_TAPA_CLARA = (0.0343, 0.275, 0.849, 1.0)   # celeste #348FED aprobado en el proyecto Botellas Finales
+COLOR_TAPA_ECO = (0.018, 0.018, 0.02, 1.0)       # negra
 FRAMES = 120
-SWAP = (82, 92)            # cambio de TAPA (azul alta -> negra corta): entre 792° y 858°, cuando el canto de la etiqueta
-                           # mira a cámara en la última media vuelta (la etiqueta ya no cruza: está en el dorso)
+SWAP_ETIQ = (44, 56)       # cruce de etiqueta Clara -> Eco cuando el giro ya tomó velocidad (15 a 26°/frame, con barrido)
+SWAP_TAPA = (77, 97)       # cambio de tapa (azul alta -> negra corta) en la desaceleración, el doble de lento que en v007
+SWAP = SWAP_TAPA
 RES = (800, 2000)          # encuadre vertical, igual que el placeholder web (giro_###.webp)
 SAMPLES_FULL, SAMPLES_TEST = 64, 24   # con denoise, 64 alcanza para web (~10 s/frame en RTX 4090)
 
@@ -58,12 +61,13 @@ def nodos(mat):
         nt.nodes.remove(n)
     return nt
 
-def keyframe_swap(socket):
-    """0 antes del cruce, 1 después (curva suave entre SWAP[0] y SWAP[1])."""
+def keyframe_swap(socket, rango=None):
+    """0 antes del cruce, 1 después (curva suave entre rango[0] y rango[1]; por defecto el de la tapa)."""
+    rango = rango or SWAP
     socket.default_value = 0.0
-    socket.keyframe_insert("default_value", frame=SWAP[0])
+    socket.keyframe_insert("default_value", frame=rango[0])
     socket.default_value = 1.0
-    socket.keyframe_insert("default_value", frame=SWAP[1])
+    socket.keyframe_insert("default_value", frame=rango[1])
 
 # ---------------------------------------------------------------- sólidos de revolución: botella (sin tapa) y tapa aparte
 def lathe(nombre, puntos_zr, z_ini, z_fin):
@@ -119,7 +123,7 @@ except KeyError:
     pass
 mix = nt.nodes.new("ShaderNodeMixRGB")
 # tapa Clara azul (azul pleno tipo #4A80DB de la referencia; el medido en la foto salía pálido) -> tapa Eco negra
-mix.inputs["Color1"].default_value = (0.10, 0.28, 0.72, 1.0)
+mix.inputs["Color1"].default_value = COLOR_TAPA_CLARA
 mix.inputs["Color2"].default_value = COLOR_TAPA_ECO
 keyframe_swap(mix.inputs["Fac"])
 nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
@@ -223,17 +227,53 @@ mat_et = bpy.data.materials.new("Etiqueta")
 nt = nodos(mat_et)
 out = nt.nodes.new("ShaderNodeOutputMaterial")
 bsdf = nt.nodes.new("ShaderNodeBsdfPrincipled")
-bsdf.inputs["Roughness"].default_value = 0.62          # papel/film mate: que no se lave con el brillo
+
+def tex(nombre, dato=False):
+    n = nt.nodes.new("ShaderNodeTexImage")
+    n.image = bpy.data.images.load(INS + "/" + nombre)
+    if dato:
+        n.image.colorspace_settings.name = "Non-Color"
+    return n
+
+# Etiquetas ORIGINALES (proyecto Botellas Finales): Clara con su calado real en el alpha, Eco a dos tintas.
+t_cl, t_clm = tex(info["etiqueta_clara"]), tex(info["etiqueta_clara_mask"], True)
+t_ec, t_ecm = tex(info["etiqueta_eco"]), tex(info["etiqueta_eco_mask"], True)
+
+# cruce Clara -> Eco mientras el giro va rápido (el barrido lo disimula)
+cruce = nt.nodes.new("ShaderNodeValue"); cruce.label = "Cruce etiqueta"
+keyframe_swap(cruce.outputs[0], SWAP_ETIQ)
+
+def mezcla(a, b):
+    m = nt.nodes.new("ShaderNodeMixRGB")
+    nt.links.new(cruce.outputs[0], m.inputs["Fac"])
+    if a is not None: nt.links.new(a, m.inputs["Color1"])
+    if b is not None: nt.links.new(b, m.inputs["Color2"])
+    return m
+
+# el "negro" del arte Eco es gris ~33 sRGB y AgX lava el verde: +35 % saturación y +0,12 de contraste solo para la Eco
+eco_sat = nt.nodes.new("ShaderNodeHueSaturation"); eco_sat.inputs["Saturation"].default_value = 1.35
+eco_con = nt.nodes.new("ShaderNodeBrightContrast"); eco_con.inputs["Contrast"].default_value = 0.12
+nt.links.new(t_ec.outputs["Color"], eco_sat.inputs["Color"])
+nt.links.new(eco_sat.outputs["Color"], eco_con.inputs["Color"])
+col = mezcla(t_cl.outputs["Color"], eco_con.outputs["Color"])
+alf = mezcla(t_cl.outputs["Alpha"], None); alf.inputs["Color2"].default_value = (1, 1, 1, 1)   # la Eco es opaca
+msk = mezcla(t_clm.outputs["Color"], t_ecm.outputs["Color"])                                   # 1 = papel blanco, 0 = tinta
+nt.links.new(col.outputs["Color"], bsdf.inputs["Base Color"])
+nt.links.new(alf.outputs["Color"], bsdf.inputs["Alpha"])
+
+# la máscara maneja el acabado: el papel blanco brilla (perlado), las tintas quedan mate y sin velo -> más contraste
+def rango(valor_tinta, valor_papel, entrada):
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    nt.links.new(msk.outputs["Color"], mr.inputs["Value"])
+    mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = 0.0, 1.0
+    mr.inputs["To Min"].default_value, mr.inputs["To Max"].default_value = valor_tinta, valor_papel
+    nt.links.new(mr.outputs["Result"], bsdf.inputs[entrada])
+rango(0.45, 0.22, "Roughness")
 try:
-    bsdf.inputs["Specular IOR Level"].default_value = 0.22
+    rango(0.0, 0.60, "Specular IOR Level")      # tintas sin brillo: el negro queda negro
 except KeyError:
     pass
-# una sola textura con las dos etiquetas: Clara al frente (u 0.25-0.75) y Eco en el dorso; al girar entra la otra
-tex_d = nt.nodes.new("ShaderNodeTexImage")
-tex_d.image = bpy.data.images.load(INS + "/" + info.get("etiqueta_doble", "etiqueta_doble.png"))
-tex_d.label = "Etiqueta doble"
-nt.links.new(tex_d.outputs["Color"], bsdf.inputs["Base Color"])
-nt.links.new(tex_d.outputs["Alpha"], bsdf.inputs["Alpha"])
+rango(0.0, 0.10, "Metallic")
 nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
 etiqueta.data.materials.append(mat_et)
 
@@ -299,6 +339,10 @@ def luz(nombre, loc, energia, size, color=(1, 1, 1)):
 luz("Key", (-0.7, -0.9, 0.9), 55, 0.9, (1.0, 0.97, 0.93))
 luz("Fill", (0.9, -0.8, 0.4), 20, 1.2, (0.92, 0.96, 1.0))
 luz("Rim", (0.5, 0.9, 0.8), 45, 0.5, (1.0, 1.0, 1.0))
+# kicker perlado (como PEARL_kicker del proyecto Botellas Finales): tira vertical fina cuyo reflejo barre el papel blanco
+kick = luz("Kicker_perlado", (0.62, -0.55, ALTO * 0.64), 10, 0.03)
+kick.data.shape = "RECTANGLE"; kick.data.size = 0.03; kick.data.size_y = 0.32
+kick.visible_camera = False
 
 cam_d = bpy.data.cameras.new("Camara")
 cam_d.lens = 100.0
@@ -344,8 +388,13 @@ try:
     scene.view_settings.view_transform = "AgX"
 except TypeError:
     scene.view_settings.view_transform = "Filmic"
-scene.view_settings.look = "None"
-scene.view_settings.exposure = -0.35
+LOOK = "AgX - Medium High Contrast"   # AgX base aplana: con este look el blanco del papel y el negro de la tinta se separan
+try:
+    scene.view_settings.look = LOOK
+except TypeError:
+    print("look no disponible:", LOOK)
+    scene.view_settings.look = "None"
+scene.view_settings.exposure = -0.2
 scene.frame_start, scene.frame_end = 1, FRAMES
 scene.render.fps = 30
 scene.render.filepath = BASE + "/render/giro_"
@@ -380,11 +429,21 @@ print("Guardado:", BLEND_OUT)
 
 if MODE_TEST:
     os.makedirs(BASE + "/render_test", exist_ok=True)
-    for f in (1, 64, 88, 119):
+    for f in (1, 50, 119):
         scene.frame_set(f)
         scene.render.filepath = BASE + f"/render_test/test_{f:04d}.png"
         bpy.ops.render.render(write_still=True)
         print("Render test:", scene.render.filepath)
+        if f == 119:
+            # mismo render con otros looks de AgX, para comparar contraste (el look se aplica al guardar)
+            rr = bpy.data.images["Render Result"]
+            for lk in ("None", "AgX - Medium High Contrast", "AgX - High Contrast", "AgX - Punchy"):
+                try:
+                    scene.view_settings.look = lk
+                    rr.save_render(BASE + f"/render_test/look_{lk.replace('AgX - ', '').replace(' ', '_')}.png", scene=scene)
+                except Exception as e:
+                    print("look", lk, "->", e)
+            scene.view_settings.look = LOOK
     scene.render.filepath = BASE + "/render/giro_"
 elif MODE_RENDER:
     bpy.ops.render.render(animation=True)

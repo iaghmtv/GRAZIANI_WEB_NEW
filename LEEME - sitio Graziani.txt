@@ -31,7 +31,17 @@ E:\GRACIANI\WEB GRAZIANI\03 BLENDER GIRO BOTELLA\
                               v007: ETIQUETA DOBLE (insumos\etiqueta_doble.png): Clara al frente y Eco en el dorso de la misma
                               botella; al girar entra la otra etiqueta, sin fundido ni relleno. 2,5 vueltas para terminar en la
                               Eco. La tapa cambia (azul alta -> negra corta) en la última media vuelta (frames 82-92).
-    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v007.blend y renderiza
+                              v008: ETIQUETAS ORIGINALES PLANAS del proyecto E:\GRACIANI\Botellas Finales\textures:
+                                Clara = agua-sin-gas-500-topaz (RGBA con el calado real de la ola: sin orejas en ningún ángulo)
+                                Eco   = eco agua graziani SIN TRAMA ... 2 tintas rgb + su máscara rougnes (blanco = papel, negro = tinta)
+                              01_preparar_insumos.py recorta la marca de registro del borde, pone de frente el logo de las fotos y
+                              genera insumos\etiqueta_clara_orig/mask.png y etiqueta_eco_orig/mask.png (4096 px, anillo de 39,8 mm).
+                              La máscara maneja el acabado: papel brillante perlado (rough 0,22, specular 0,6, metálico 0,1), tintas
+                              mate sin brillo (rough 0,45, specular 0) -> negro profundo. Eco con +35 % saturación y +0,12 contraste
+                              (el negro del arte es gris 33). 3 vueltas; la Clara gira sola al arrancar y se cruza a la Eco con el giro
+                              rápido (frames 44-56); la tapa cambia en frames 77-97 (el doble de lento). Tapa Clara #348FED.
+                              Look de color: AgX - Medium High Contrast, exposición -0,2. Kicker perlado lateral (10 W).
+    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v008.blend y renderiza
                               v003: tapa como objeto aparte con shape key (Clara azul alta -> Eco negra corta, 66 %),
                               950 gotas de condensación (malla propia hija de la botella), AgX y luces bajas (no quema)
     03_exportar_frames_web.py (python normal) render\giro_####.png -> 02 SITIO NUEVO\assets\hero\giro\giro_###.webp
@@ -68,7 +78,6 @@ Dos ajustes en hero.css para que el scroll funcione con ScrollTrigger sobre el C
   - html/body height:auto (el original ponía 100% y el scroll ocurría dentro del body, invisible para ScrollTrigger)
   - #indexcontainer display:block (era flex en columna y el espaciador del pin no crecía)
 hero.html sigue como prototipo aislado; pagina-anterior.html es la home con el hero viejo, solo referencia.
-Pendiente mobile: el original usa hamburguesa; el nav nuevo muestra la píldora, que en celular se desplaza lateral.
 
 HERO NUEVO (02 SITIO NUEVO\hero.html) - v3 del 2026-09-24
 --------------------------------------------------
@@ -96,6 +105,18 @@ Repo: https://github.com/iaghmtv/GRAZIANI_WEB_NEW (público, rama main). Cada pu
   Página completa: https://iaghmtv.github.io/GRAZIANI_WEB_NEW/
   Prototipo hero:  https://iaghmtv.github.io/GRAZIANI_WEB_NEW/hero.html
 Pages está configurado con origen "GitHub Actions". El push lo puede hacer Claude (regla en .claude\settings.json).
+
+VERSIÓN MÓVIL (2026-09-24) - con lo aprendido en la skill ghm-web (E:\08 WEB GHM CLAUDE\.claude\skills\ghm-web)
+-----------------------------------------------------------------------------------------------
+  - Un solo breakpoint, el del sitio original: 768 px. Los overrides móviles van AL FINAL de hero.css (cascada).
+  - Menú: botón hamburguesa (44x44) + cajón lateral azul #436694 como el original, entra y sale por la izquierda
+    con curva de iOS; cierra con link, fondo oscuro o Escape; bloquea el scroll de fondo (js\nav.js).
+  - Hero móvil: tipografía del original (35 / 20 px), botella centrada 46vh que termina arriba del "Deslizá",
+    cordillera con la FOTO vertical + paneo (el clip 16:9 no se descarga en celular: 10 MB menos y más nítido).
+  - Assets versionados ?v=AAAAMMDDx en index.html y hero.html: subir la letra en cada cambio de CSS/JS para que
+    iPhone y Mac no muestren caché.
+  - Capturas de 390 px reales: 02 SITIO NUEVO\_captura_movil.html (iframes de 390x844; no se publica).
+    Chrome headless no baja de ~500 px de ancho y el panel del navegador no saca capturas: medir el DOM.
 
 PENDIENTES
 ----------

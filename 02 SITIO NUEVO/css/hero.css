@@ -16,6 +16,7 @@
   /* Curvas fuertes (las nativas son flojas) */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);   /* curva de cajón de iOS (la de Vaul) */
 
   --bottle-h: 86vh;          /* el frame trae margen: la botella visible queda ~80vh, como el original */
 }
@@ -331,10 +332,7 @@ body {
    Mobile
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
-  :root { --bottle-h: 52vh; }
-  .nav { padding: 35px 30px 0; gap: 10px; }
-  .nav__links { gap: 6px; padding: 8px 12px; max-width: calc(100% - 90px); }
-  .nav__links a { font-size: 14px; padding: 4px 6px; }
+  :root { --bottle-h: 46vh; }
   .nav__brand, .nav__logo { height: 20px; }   /* mobile del original */
   .hero__copy {
     left: 20px;
@@ -350,10 +348,124 @@ body {
     background:
       linear-gradient(180deg, rgba(8, 24, 44, 0.6) 0%, rgba(8, 24, 44, 0.25) 40%, rgba(8, 24, 44, 0) 60%);
   }
-  .hero__stagewrap { justify-content: center; padding-right: 0; bottom: 5vh; }
+  .hero__stagewrap { justify-content: center; padding-right: 0; bottom: 10vh; }   /* termina arriba del "Deslizá" */
   .cols { grid-template-columns: 1fr; gap: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .nav__links a { transition: none; }
+}
+
+/* ==========================================================================
+   MÓVIL: menú hamburguesa + cajón lateral (≤ 768 px, el breakpoint del sitio original)
+   Va al FINAL del archivo a propósito: un override en el medio pierde por orden de cascada
+   (lección de la skill ghm-web). Cajón: entra y sale por la izquierda (consistencia espacial),
+   curva de iOS al abrir, salida más rápida que la entrada.
+   ========================================================================== */
+.nav__burger,
+.nav__scrim { display: none; }
+
+@media (max-width: 768px) {
+  .nav { padding: 22px 16px 0; align-items: center; }
+
+  .nav__burger {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+    width: 44px;                        /* área táctil mínima de 44 px */
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 160ms var(--ease-out);
+  }
+  .nav__burger:active { transform: scale(0.94); }
+  .nav__burger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    border-radius: 2px;
+    background: #fff;
+    transition: transform 280ms var(--ease-drawer), opacity 160ms var(--ease-out), background-color 220ms var(--ease-out);
+  }
+  .nav--light .nav__burger span { background: var(--azul); }
+  .nav.is-open .nav__burger span { background: #fff; }
+  .nav.is-open .nav__burger span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+  .nav.is-open .nav__burger span:nth-child(2) { opacity: 0; }
+  .nav.is-open .nav__burger span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+  .nav__links {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    box-sizing: border-box;
+    width: min(82%, 320px);
+    max-width: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 92px 28px 32px;
+    border-radius: 0;
+    background: var(--azul-2);          /* #436694, el color del menú del sitio original */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateX(-100%);
+    visibility: hidden;                  /* cerrado: fuera del orden de tabulación */
+    transition: transform 240ms var(--ease-out), visibility 0s linear 240ms;
+  }
+  .nav.is-open .nav__links {
+    transform: none;
+    visibility: visible;
+    transition: transform 420ms var(--ease-drawer), visibility 0s;
+  }
+  .nav__links a,
+  .nav--light .nav__links a {
+    padding: 16px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 300;
+  }
+  .nav__links a::after { display: none; }
+  .nav__links a:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.6);
+    outline-offset: -2px;
+    border-radius: 6px;
+  }
+
+  .nav__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    background: rgba(8, 24, 44, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms var(--ease-out);
+  }
+  .nav.is-open .nav__scrim {
+    opacity: 1;
+    pointer-events: auto;
+    transition-duration: 320ms;
+  }
+
+  html.menu-abierto,
+  html.menu-abierto body { overflow: hidden; }   /* sin scroll de fondo con el menú abierto */
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .nav__links,
+  .nav.is-open .nav__links,
+  .nav__burger span { transition: none; }
 }

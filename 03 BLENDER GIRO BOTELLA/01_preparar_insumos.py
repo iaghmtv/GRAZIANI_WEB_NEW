@@ -175,11 +175,86 @@ def doble(W=4096, Hh=1024):
 DOBLE_PATH, Z_DOBLE_MIN, Z_DOBLE_MAX = doble()
 print(f"etiqueta doble: {DOBLE_PATH}  anillo z={Z_DOBLE_MIN*1000:.1f}-{Z_DOBLE_MAX*1000:.1f} mm")
 
+
+# ---------------- Etiquetas ORIGINALES planas (proyecto E:/GRACIANI/Botellas Finales/textures) ----------------
+# Clara: agua-sin-gas-500-topaz (RGBA con el recorte real de la ola, la "calada"). Eco: arte a 2 tintas + su máscara
+# de roughness (blanco = papel, negro = tintas). Se recorta la marca de registro oscura del borde derecho, se rota cada
+# una para que quede de frente (u = 0.5) el mismo logo que muestran las fotos de producto, y se reducen a 4096 px.
+TEX_ORIG = "E:/GRACIANI/Botellas Finales/textures"
+ORIG = {
+    #        color                                                         máscara roughness                                                     logo de frente  umbral oscuro
+    "clara": (TEX_ORIG + "/agua-sin-gas-500-topaz-high fidelity-4x.png", None,                                                                1,              110),
+    "eco":   (TEX_ORIG + "/eco agua graziani SIN TRAMA x 500cc orig 2 tintas rgb.png",
+              TEX_ORIG + "/eco agua graziani SIN TRAMA x 500cc orig 2 tintas rgb rougnes.png",                                               0,              60),
+}
+W_OUT = 4096
+
+def fin_util(a):
+    """Primera columna de la marca de registro oscura del borde derecho (o el ancho si no hay)."""
+    h, w = a.shape[:2]
+    lum = a[..., :3].mean(axis=2)
+    alpha = a[..., 3]
+    zona = slice(int(h * 0.72), int(h * 0.97))
+    oscuro = ((lum[zona] < 70) & (alpha[zona] > 200)).mean(axis=0)
+    cols = np.where(oscuro[int(w * 0.95):] > 0.8)[0]
+    return w if len(cols) == 0 else int(w * 0.95) + int(cols[0]) - 12
+
+def centros_logo(a, x_fin, umbral):
+    """x de los dos círculos oscuros del logo: perfil de columnas oscuras en la franja media, suavizado."""
+    h = a.shape[0]
+    lum = a[:, :x_fin, :3].mean(axis=2)
+    perfil = ((lum[int(h * 0.25):int(h * 0.75)] < umbral) & (a[int(h * 0.25):int(h * 0.75), :x_fin, 3] > 200)).mean(axis=0)
+    k = max(3, x_fin // 20)
+    perfil = np.convolve(perfil, np.ones(k) / k, mode="same")
+    picos, q = [], perfil.copy()
+    for _ in range(2):
+        i = int(np.argmax(q)); picos.append(i)
+        q[max(0, i - x_fin // 8):i + x_fin // 8] = 0
+    return sorted(picos)
+
+def preparar(nombre):
+    f_color, f_mask, frente, umbral = ORIG[nombre]
+    a = np.array(Image.open(f_color).convert("RGBA"))
+    x_fin = fin_util(a.astype(np.float32))
+    logos = centros_logo(a.astype(np.float32), x_fin, umbral)
+    cx = logos[frente]
+    shift = x_fin // 2 - cx
+    def rodar(arr):
+        return np.roll(arr[:, :x_fin], shift, axis=1)
+    col = rodar(a)
+    h_out = round(col.shape[0] * W_OUT / col.shape[1])
+    im = Image.fromarray(col, "RGBA").convert("RGBa").resize((W_OUT, h_out), Image.LANCZOS).convert("RGBA")
+    im.save(OUT + f"/etiqueta_{nombre}_orig.png")
+    if f_mask:
+        m = np.array(Image.open(f_mask).convert("L"))
+        mk = Image.fromarray(rodar(m[:, :, None])[:, :, 0], "L").resize((W_OUT, h_out), Image.LANCZOS)
+    else:
+        rgb = np.array(im).astype(np.float32)
+        lum = rgb[..., :3].mean(axis=2)
+        mk = Image.fromarray((np.clip((lum - 110.0) / 125.0, 0, 1) * 255).astype(np.uint8), "L")
+    mk.save(OUT + f"/etiqueta_{nombre}_mask.png")
+    print(f"etiqueta {nombre}: original {a.shape[1]}x{a.shape[0]}, util hasta x={x_fin} ({x_fin/a.shape[1]*100:.1f} %), "
+          f"logos en x={logos} ({[round(l/x_fin, 3) for l in logos]}), de frente el {frente+1}º -> {W_OUT}x{h_out}")
+    return x_fin / a.shape[0]            # aspecto útil ancho/alto
+
+asp_cl = preparar("clara")
+asp_ec = preparar("eco")
+CIRC = 2 * math.pi * (r_lab + 0.0007)    # mismo radio que el cilindro de etiqueta de la escena
+H_ET = CIRC / asp_ec
+ZC_ET = (med["eco"]["z_bot"] + med["eco"]["z_top"]) / 2     # centro de la etiqueta en la foto de la Eco (misma botella)
+Z_ET0, Z_ET1 = ZC_ET - H_ET / 2, ZC_ET + H_ET / 2
+print(f"anillo etiquetas originales: alto {H_ET*1000:.1f} mm (circunferencia {CIRC*1000:.1f} mm / aspecto {asp_ec:.3f}), "
+      f"z={Z_ET0*1000:.1f}-{Z_ET1*1000:.1f} mm (aspecto Clara {asp_cl:.3f})")
+
 info = {
     "alto_m": ALTO_M,
     "tapa_desde_z": round(tapa_z0, 5),
-    "etiqueta_z": [round(float(Z_DOBLE_MIN), 5), round(float(Z_DOBLE_MAX), 5)],
+    "etiqueta_z": [round(float(Z_ET0), 5), round(float(Z_ET1), 5)],
     "etiqueta_doble": "etiqueta_doble.png",
+    "etiqueta_clara": "etiqueta_clara_orig.png",
+    "etiqueta_clara_mask": "etiqueta_clara_mask.png",
+    "etiqueta_eco": "etiqueta_eco_orig.png",
+    "etiqueta_eco_mask": "etiqueta_eco_mask.png",
     "etiqueta_z_agua": [round(float(med["agua"]["z_bot"]), 5), round(float(med["agua"]["z_top"]), 5)],
     "etiqueta_z_eco": [round(float(med["eco"]["z_bot"]), 5), round(float(med["eco"]["z_top"]), 5)],
     "r_etiqueta_m": round(r_lab, 5),

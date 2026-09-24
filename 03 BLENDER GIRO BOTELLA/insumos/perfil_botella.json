@@ -2,10 +2,14 @@
  "alto_m": 0.21,
  "tapa_desde_z": 0.18585,
  "etiqueta_z": [
-  0.12094,
-  0.16317
+  0.11577,
+  0.15555
  ],
  "etiqueta_doble": "etiqueta_doble.png",
+ "etiqueta_clara": "etiqueta_clara_orig.png",
+ "etiqueta_clara_mask": "etiqueta_clara_mask.png",
+ "etiqueta_eco": "etiqueta_eco_orig.png",
+ "etiqueta_eco_mask": "etiqueta_eco_mask.png",
  "etiqueta_z_agua": [
   0.12094,
   0.16317
