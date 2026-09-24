@@ -4,65 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graziani</title>
-    <meta name="description" content="Graziani: agua mineral natural de Los Andes. Hidra Embotelladora, San Juan, Argentina.">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/hero.css">
-    <link rel="preload" as="image" href="assets/hero/cordillera.jpg">
 </head>
 <body>
 
     
-  <nav class="nav" aria-label="Principal">
-    <div class="nav__links">
-      <a href="origen.html">El origen</a>
-      <a href="#quienessomos">Quiénes somos</a>
-      <a href="#productos">Productos</a>
-      <a href="#calidad">Calidad</a>
-      <a href="sustentabilidad.html">Sustentabilidad</a>
-      <a href="#contacto">Contacto</a>
-    </div>
-    <a class="nav__brand" href="index.html" aria-label="Graziani, inicio">
-      <img class="nav__logo nav__logo--blanco" src="assets/logo/graziani.png" alt="Graziani">
-      <img class="nav__logo nav__logo--azul" src="assets/logo/graziani-azul.png" alt="" aria-hidden="true">
-    </a>
-  </nav>
-
     <div class="container" id="indexcontainer">
-  <section class="hero" id="hero" aria-label="Presentación" data-nav="dark">
-    <div class="hero__bg">
-      <picture>
-        <source media="(max-width: 768px)" srcset="assets/hero/cordillera-mobile.jpg">
-        <img src="assets/hero/cordillera.jpg" alt="" fetchpriority="high" decoding="sync">
-      </picture>
-      <canvas class="hero__bgseq" aria-hidden="true"></canvas>
-    </div>
-    <div class="hero__scrim" aria-hidden="true"></div>
-
-    <div class="hero__copy hero__copy--a">
-      <h1>El espíritu<br>de Los Andes<br><strong>hecho agua</strong></h1>
-      <p>Hacemos productos que nuestros clientes aman y el planeta agradece.</p>
-    </div>
-
-    <div class="hero__copy hero__copy--b">
-      <span class="eyebrow">Nueva · Eco Agua</span>
-      <h2>La misma agua.<br><strong>Nueva botella.</strong></h2>
-      <p>Agua mineral natural sin gas y baja en sodio, ahora en botella reciclada.</p>
-    </div>
-
-    <div class="hero__stagewrap">
-      <div class="hero__stage">
-        <div class="hero__shadow" aria-hidden="true"></div>
-        <div class="flip">
-          <img class="flip__face flip__face--front" src="assets/hero/botella-agua-500.webp" width="644" height="2000" alt="Botella Clara by Graziani, agua mineral natural 500 cc">
-          <img class="flip__face flip__face--back" src="assets/hero/botella-eco-500.webp" width="644" height="2000" alt="Botella Eco Agua Clara by Graziani 500 cc, reciclada">
+        <div class="box">
+            <nav class="main-nav">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="nav-links">
+                    <div class="nav-header">
+                        <img src="assets/logo/graziani.png" alt="Graziani Logo" class="menu-logo">
+                    </div>
+                    <a href="origen.html">El origen</a>
+                    <a href="#quienessomos">Quienes somos</a>
+                    <a href="#productos">Productos</a>
+                    <a href="#calidad">Calidad</a>
+                    <a href="sustentabilidad.html">Sustentabilidad</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+            </nav>
+            <div class="logo">
+                <a href="index.html">
+                    <img src="assets/logo/graziani.png" alt="Graziani Logo">
+                </a>
+            </div>
+            <div class="text-container fade-in">
+                <div class="main-text">
+                    El espíritu <br>
+                    de Los Andes <br> 
+                    hecho agua
+                </div>
+                <div class="secondary-text">
+                    Hacemos Productos que   <br>
+                    nuestros clientes  aman  y el <br> 
+                    planeta agradece
+                </div>
+            </div>
+            <div class="bottle-container ">
+                <img src="assets/botellas/landing2.png" alt="Botella Graziani" class="landing-bottle fade-in">
+            </div>
         </div>
-        <canvas class="hero__seq" aria-hidden="true"></canvas>
-      </div>
-    </div>
-
-    <div class="hero__hint" aria-hidden="true">Deslizá</div>
-  </section>
-        <div class="box" id="quienessomos" data-nav="light">
+        <div class="box" id="quienessomos">
             <h2><span class="fade-in">QUIENES SOMOS</span></h2>
             <div class="content-columns">
                 <div class="left-column fade-in">
@@ -113,7 +101,7 @@
                 </div>
             </div>
         </div>
-        <div class="box" id="origen" data-nav="dark">
+        <div class="box" id="origen">
             <div class="origen-content fade-in">
                 <h2>ORIGEN</h2>
                 <p>
@@ -123,7 +111,7 @@
                 <button class="conocelo-btn" onclick="window.location.href='origen.html';">Conócelo ></button>
             </div>
         </div>
-        <div class="box valores-contenedor" data-nav="light">
+        <div class="box valores-contenedor">
             <section class="valores-section">
                 <h2 class="valores-title">VALORES</h2>
                 <div class="valores-grid">
@@ -207,7 +195,7 @@
             </section>
         </div>
         <div class="box">
-            <section class="contenedor5" data-nav="dark">
+            <section class="contenedor5">
                 <div class="contenedor5-content">
                     <h2 class="minerales-title">MINERALES</h2>
                
@@ -303,7 +291,7 @@
             </section>
         </div>
        
-        <div class="backg" id="productos" data-nav="light">   
+        <div class="backg" id="productos">   
         <h2 class="productos-title">PRODUCTOS</h2>
         
         <nav class="categorias">
@@ -349,7 +337,7 @@
         </div>
     </div>
 </div>
-        <div class="box" id="sustentabilidad" data-nav="light">
+        <div class="box" id="sustentabilidad">
             <section class="contenedor-sustentabilidad">
                 <div class="sustentabilidad-content">
                     <div class="sustentabilidad-text fade-in">
@@ -364,7 +352,7 @@
                 </div>
             </section>
         </div>
-        <div class="box" id="calidad" data-nav="dark">
+        <div class="box" id="calidad">
             <section class="contenedor7">
                 <div class="calidad-content fade-in">
                     <h2 class="calidad-title">CALIDAD</h2>
@@ -452,7 +440,7 @@
                     </div>
                 </section>
             </div>
-        <div class="box" id="contacto" data-nav="dark">
+        <div class="box" id="contacto">
             <section class="contenedor8">
                 <div class="form-container">
                     <h2 class="contacto-title">CONTACTO</h2>
@@ -494,7 +482,7 @@
                 </div>
             </section>
         </div>
-        <div class="contenedor9" data-nav="light">
+        <div class="contenedor9">
             <div class="icons-container">
                 <img src="assets/logo/ecoplas.png" alt="Ecoplas" class="certification-icon" id="eco">
                 <img src="assets/logo/iso.png" alt="ISO 9001:2015" class="certification-icon" id="iso">
@@ -510,7 +498,7 @@
                 clientes aman y el planeta agradece.
             </p>
         </div>
-        <div class="contenedor10" data-nav="dark">
+        <div class="contenedor10">
             <div class="contenedor10-content">
                 <img src="assets/iconos/grazianifoot.png" alt="Graziani Footer" class="graziani-footer-icon">
                 <div class="social-content">
@@ -536,7 +524,4 @@
 <script src="js/calidad.js"></script>
 <script src="js/scripts.js"></script>
 <script src="js/productos.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-<script src="js/hero.js"></script>
 </html>

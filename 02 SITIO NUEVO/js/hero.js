@@ -243,7 +243,7 @@
         const b = (f - 0.5) * 2;
         tlB.progress(b);
         // simula el scroll del hero saliendo (mueve las secciones, no el html, para que el nav fijo no se desplace)
-        gsap.set([hero, ...document.querySelectorAll(".section")], { y: -b * window.innerHeight });
+        gsap.set([hero, ...document.querySelectorAll("[data-nav]:not(.hero)")], { y: -b * window.innerHeight });
       }
     };
     if (document.readyState === "complete") jump(); else window.addEventListener("load", jump);
@@ -261,7 +261,10 @@
       if (i >= pasos.length) { document.title = "SNAPTEST " + res.join(" | "); return; }
       window.scrollBy(0, pasos[i]);
       setTimeout(() => {
-        res.push(`d${pasos[i]}>y${Math.round(window.scrollY)} A${stA.progress.toFixed(2)} B${tlB.scrollTrigger.progress.toFixed(2)} ${nav ? nav.className : ""}`);
+        const bajoLogo = [...document.querySelectorAll("[data-nav]")]
+          .filter((el) => { const r = el.getBoundingClientRect(); return r.top <= 48 && r.bottom >= 48; })
+          .map((el) => (el.id || el.className.split(" ")[0]) + ":" + el.dataset.nav).join(",");
+        res.push(`d${pasos[i]}>y${Math.round(window.scrollY)} A${stA.progress.toFixed(2)} B${tlB.scrollTrigger.progress.toFixed(2)} ${nav ? nav.className : ""} [${bajoLogo}]`);
         i++; paso();
       }, 2600);
     };

@@ -56,6 +56,17 @@ E:\GRACIANI\WEB GRAZIANI\00 HERRAMIENTAS\
 E:\GRACIANI\WEB GRAZIANI\GRAZIANI WEB DATA.ENV
     Accesos cPanel/FTP (no compartir, no subir a git).
 
+PÁGINA COMPLETA (02 SITIO NUEVO\index.html) - 2026-09-24
+----------------------------------------------------
+index.html ya es la home entera: nav + hero nuevos reemplazan al hero original dentro del contenedor (el hero
+queda como primer hijo, así los .box:nth-child del CSS original siguen valiendo) y debajo van todas las secciones
+originales con los productos nuevos. Cada sección lleva data-nav="dark|light" según el brillo de su fondo.
+Dos ajustes en hero.css para que el scroll funcione con ScrollTrigger sobre el CSS original:
+  - html/body height:auto (el original ponía 100% y el scroll ocurría dentro del body, invisible para ScrollTrigger)
+  - #indexcontainer display:block (era flex en columna y el espaciador del pin no crecía)
+hero.html sigue como prototipo aislado; pagina-anterior.html es la home con el hero viejo, solo referencia.
+Pendiente mobile: el original usa hamburguesa; el nav nuevo muestra la píldora, que en celular se desplaza lateral.
+
 HERO NUEVO (02 SITIO NUEVO\hero.html) - v3 del 2026-09-24
 --------------------------------------------------
 Estilo Apple con GSAP ScrollTrigger. Coreografía:

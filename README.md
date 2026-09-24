@@ -7,7 +7,7 @@ Sitio estático (HTML, CSS y JS sin framework), pensado para subir tal cual por 
 
 | Carpeta | Qué hay |
 | --- | --- |
-| `02 SITIO NUEVO/` | El sitio en desarrollo. `hero.html` es el hero animado nuevo; `index.html`, `origen.html` y `sustentabilidad.html` son las páginas actuales con los productos nuevos ya cargados. |
+| `02 SITIO NUEVO/` | El sitio en desarrollo. `index.html` es la página completa con el hero animado nuevo integrado y todas las secciones (productos nuevos incluidos); `hero.html` es el prototipo aislado del hero; `pagina-anterior.html` es la home con el hero viejo, solo como referencia; `origen.html` y `sustentabilidad.html` son las páginas interiores actuales. |
 | `03 BLENDER GIRO BOTELLA/` | Escena de Blender (script + `.blend`) que renderiza la botella girando y convirtiéndose en Eco Agua. Los frames exportados viven en `02 SITIO NUEVO/assets/hero/giro/`. |
 | `04 COMFYUI CORDILLERA/` | Workflow de ComfyUI (Wan 2.2 I2V) que genera el clip de la cámara bajando por la cordillera. Frames en `02 SITIO NUEVO/assets/hero/cordillera/`. |
 | `00 HERRAMIENTAS/` | Scripts de inventario y respaldo por FTP (leen las credenciales de un archivo local que no está en el repo). |
@@ -17,7 +17,7 @@ No están en el repo (solo en local): el respaldo del servidor, los insumos de 6
 
 ## Ver el sitio
 
-- Publicado con GitHub Pages desde la carpeta `02 SITIO NUEVO` (workflow en `.github/workflows/pages.yml`). El hero está en `/hero.html`.
+- Publicado con GitHub Pages desde la carpeta `02 SITIO NUEVO` (workflow en `.github/workflows/pages.yml`): la raíz es la página completa; `/hero.html` es el prototipo del hero.
 - En local: cualquier servidor estático sobre `02 SITIO NUEVO`, por ejemplo `python -m http.server 8765` y abrir `http://localhost:8765/hero.html`.
 
 ## Hero animado

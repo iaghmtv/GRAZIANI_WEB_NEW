@@ -26,17 +26,23 @@
 @font-face { font-family: "Montserrat"; font-weight: 500; font-style: normal; font-display: swap; src: url("../fonts/montserratmedium.ttf") format("truetype"); }
 @font-face { font-family: "Montserrat"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/montserratsemibold.ttf") format("truetype"); }
 
-*, *::before, *::after { box-sizing: border-box; }
+/* Resets acotados al nav, al hero y a las secciones del prototipo: no tocan el CSS original del resto de la página */
+.nav, .nav *, .hero, .hero *, .section, .section * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+/* styles.css pone height:100% en html/body con overflow-x:hidden: el scroll pasaba dentro del body y
+   ScrollTrigger (que escucha la ventana) no lo veía. Con altura automática scrollea la ventana. */
+html, body { height: auto; }
+/* El contenedor original es flex en columna: ahí el espaciador del pin de ScrollTrigger no crece y las secciones
+   siguientes se deslizan escondidas bajo el hero. Como bloque normal el layout es idéntico y el pin reserva su espacio. */
+#indexcontainer { display: block; }
 body {
   margin: 0;
   font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: var(--gris-texto);
-  background: var(--celeste-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-img { display: block; max-width: 100%; }
+.nav img, .hero img { display: block; max-width: 100%; }
+.section { color: var(--gris-texto); background: var(--celeste-bg); }
 
 /* --------------------------------------------------------------------------
    Nav (píldora translúcida, como el sitio actual)
