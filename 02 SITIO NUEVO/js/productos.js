@@ -3,7 +3,7 @@ const productos = [
   {
     capacidad: 500,
     medida: "cc",
-    imagen: "assets/botellas/ecoagua500.webp",
+    imagen: "assets/botellas/ecoagua500.webp?v=20260925b",
     popupImage: "assets/popups/ecoagua500.jpg",
     descripcion: "Eco Agua mineral natural 500cc - Sin gas, baja en sodio, botella reciclada",
     categoria: "ecoagua",
@@ -13,7 +13,7 @@ const productos = [
   {
     capacidad: 500,
     medida: "cc",
-    imagen: "assets/botellas/agua500.png",
+    imagen: "assets/botellas/agua500.webp?v=20260925b",
     popupImage: "assets/popups/agua500.png",
     descripcion: "Agua mineral natural 500cc",
     categoria: "aguas",
@@ -22,7 +22,7 @@ const productos = [
   {
     capacidad: 1,
     medida: "Litro",
-    imagen: "assets/botellas/agua1.png",
+    imagen: "assets/botellas/agua1.webp?v=20260925b",
     popupImage: "assets/popups/agua1l.png",
     descripcion: "Agua mineral natural 1 Litro",
     categoria: "aguas",
@@ -31,7 +31,7 @@ const productos = [
   {
     capacidad: 2,
     medida: "Litros",
-    imagen: "assets/botellas/agua2.png",
+    imagen: "assets/botellas/agua2.webp?v=20260925b",
     popupImage: "assets/popups/agua2l.png",
     descripcion: "Agua mineral natural 2 Litros",
     categoria: "aguas",
@@ -40,7 +40,7 @@ const productos = [
   {
     capacidad: 6,
     medida: "Litros",
-    imagen: "assets/botellas/agua6.png",
+    imagen: "assets/botellas/agua6.webp?v=20260925b",
     popupImage: "assets/popups/agua6l.png",
     descripcion: "Agua mineral natural 6 Litros",
     categoria: "aguas",
@@ -50,7 +50,7 @@ const productos = [
   {
     capacidad: 500,
     medida: "cc",
-    imagen: "assets/botellas/soda500.png",
+    imagen: "assets/botellas/soda500.webp?v=20260925b",
     popupImage: "assets/popups/soda500.png",
     descripcion: "Soda 500cc",
     categoria: "sodas",
@@ -59,7 +59,7 @@ const productos = [
   {
     capacidad: 1,
     medida: "Litro",
-    imagen: "assets/botellas/soda1.png",
+    imagen: "assets/botellas/soda1.webp?v=20260925b",
     popupImage: "assets/popups/soda1l.png",
     descripcion: "Soda 1 Litro",
     categoria: "sodas",
@@ -68,7 +68,7 @@ const productos = [
   {
     capacidad: 2,
     medida: "Litros",
-    imagen: "assets/botellas/soda2.png",
+    imagen: "assets/botellas/soda2.webp?v=20260925b",
     popupImage: "assets/popups/soda2l.png",
     descripcion: "Soda 2 Litros",
     categoria: "sodas",
@@ -77,7 +77,7 @@ const productos = [
   {
     capacidad: 2.25,
     medida: "Litros",
-    imagen: "assets/botellas/soda225.png",
+    imagen: "assets/botellas/soda225.webp?v=20260925b",
     popupImage: "assets/popups/soda225.png",
     descripcion: "Soda 2.25 Litros",
     categoria: "sodas",
@@ -87,7 +87,7 @@ const productos = [
   {
     capacidad: 500,
     medida: "cc",
-    imagen: "assets/botellas/aguapremium.png",
+    imagen: "assets/botellas/aguapremium.webp?v=20260925b",
     popupImage: "assets/popups/aguapremium500.png",
     descripcion: "Agua premium mineral 500cc",
     categoria: "premium",
@@ -96,7 +96,7 @@ const productos = [
   {
     capacidad: 500,
     medida: "cc",
-    imagen: "assets/botellas/sodapremium.png",
+    imagen: "assets/botellas/sodapremium.webp?v=20260925b",
     popupImage: "assets/popups/sodapremium500.png",
     descripcion: "Soda premium 500cc",
     categoria: "premium",

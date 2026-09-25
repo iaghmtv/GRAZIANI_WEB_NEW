@@ -31,3 +31,10 @@ __pycache__/
 
 # ===== Herramientas locales de captura (no se publican) =====
 02 SITIO NUEVO/_captura_movil.html
+
+# ===== Blender productos web: se versionan los scripts; no los renders, pruebas ni logs =====
+06 BLENDER PRODUCTOS WEB/render_*/
+06 BLENDER PRODUCTOS WEB/_cmp/
+06 BLENDER PRODUCTOS WEB/*.log
+06 BLENDER PRODUCTOS WEB/_debug*.py
+02 SITIO NUEVO/_captura_productos.html

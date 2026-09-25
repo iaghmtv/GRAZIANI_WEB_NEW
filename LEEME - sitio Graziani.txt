@@ -63,6 +63,27 @@ E:\GRACIANI\WEB GRAZIANI\04 COMFYUI CORDILLERA\
     Clave del prompt: describir el movimiento como resultado visible ("el horizonte sale por arriba, el valle entra por abajo"),
     no solo "tilt down". Otra variante: python encolar_wan.py --seed N --prompt "..." y después extraer_frames.py <carpeta>.
 
+E:\GRACIANI\WEB GRAZIANI\06 BLENDER PRODUCTOS WEB\   (2026-09-25)
+    Re-render de las botellas del carrusel de Productos para el fondo celeste de la web (#f1f9fd). Las de la web vieja
+    se hicieron con ciclorama blanco + esfera de luz: el vidrio los refractaba y sobre celeste se veían lechosas.
+    productos_web.py   (blender 5.1 -b "<blend>" -P productos_web.py -- ...) abre la escena de producto de
+                       E:\GRACIANI\Botellas Finales SIN GUARDARLA, aísla cada producto (colección + su SetLight) y lo
+                       encuadra con una cámara propia (85 mm, nivelada, botella al 92 % del alto, 1000x2000, PNG RGBA).
+                       modo=web: a través del vidrio se ve el celeste de la página (mundo con Light Path: rayos de
+                       transmisión = celeste calibrado (0,55 0,88 1,0)x6 que con AgX sale (241,248,251); reflejos = el HDRI
+                       de siempre), esfera de luz y ciclorama no se ven de fondo ni a través del vidrio, dos banderas
+                       negras a los costados dibujan el borde, sin gotas, look AgX Medium High Contrast. Líquidos de color
+                       con contraluz 1,5 (a 6 AgX los lleva al pastel). Etiquetas perladas de la 500 (Clara y Eco) con un
+                       relleno frontal enlazado solo a la etiqueta (light linking), para que el papel no se vea gris.
+    exportar_web.py    render_final_*\ -> 02 SITIO NUEVO\assets\botellas\<producto>.webp (900 px de alto) + productos.js
+    _render_final.sh   espera a que la GPU quede libre y renderiza todo por GPU.
+    Archivos de origen: la línea completa sale del .blend de junio (...Amargos Nuevas Etiqueta verde EXP tapa
+    shortclaude 1.blend; su 500 cc es la Eco, con la tapa pasada a negra); la Clara 500 sale del de abril
+    (...Camara 90 mm.blend) con la etiqueta topaz reenlazada desde Botellas Finales\textures.
+    Amargos: la web sigue con sus imágenes (etiqueta anterior). Sus texturas de abril no están en ningún disco
+    (buscaban 02_INSUMOS\02_GRAFICOS\ETIQUETAS PNG\Amargos\); los renders con la etiqueta "Nueva Versión" quedan en
+    render_final_junio\ por si se decide cambiarlos. Saborizadas 2 L: quedan las del cliente (el render sale mostaza).
+
 E:\GRACIANI\WEB GRAZIANI\11 AJUSTE PRODUCTOS WEB\
     = "Servidor 3" del Notion: PNG 6000 px de Eco Agua (alpha + capa reflejo), Agua 500 con/sin gotas,
     saborizadas 2 L, fichas JPG 1080x1920 en la raíz, PRODUCTOS WEB 01.ai (es la maqueta de la sección Productos).
