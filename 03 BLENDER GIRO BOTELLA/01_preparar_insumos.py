@@ -212,12 +212,43 @@ def centros_logo(a, x_fin, umbral):
         q[max(0, i - x_fin // 8):i + x_fin // 8] = 0
     return sorted(picos)
 
+def centro_disco(a, cx0, nombre, banda=(0.28, 0.52), umbral=0.12):
+    """x del centro del DISCO del logo (azul oscuro en la Clara, negro en la Eco): punto medio de su extensión
+    horizontal en una franja. Un círculo es simétrico respecto de su eje vertical en cualquier franja, así que
+    el texto oscuro vecino ("Cont. Neto 500cc") ya no corre el centro como en el pico de centros_logo()."""
+    h, w = a.shape[:2]
+    f = a[int(h * banda[0]):int(h * banda[1])].astype(np.int16)
+    r, g, b, al = f[..., 0], f[..., 1], f[..., 2], f[..., 3]
+    if nombre == "clara":
+        m = ((r + g + b) / 3 < 150) & (b > r + 25) & (al > 200)
+    else:
+        m = (np.maximum(np.maximum(r, g), b) < 90) & (al > 200)
+    k = max(9, w // 450)
+    p = np.convolve(m.mean(axis=0), np.ones(k) / k, mode="same")
+    ventana = slice(max(0, cx0 - w // 10), min(w, cx0 + w // 10))
+    pico = ventana.start + int(np.argmax(p[ventana]))
+    hueco = max(4, w // 250)          # tolera las letras blancas dentro del disco, no el blanco que lo rodea
+    def extremo(paso):
+        x, ult = pico, pico
+        while 0 <= x < w and abs(x - ult) <= hueco:
+            if p[x] > umbral:
+                ult = x
+            x += paso
+        return ult
+    return (extremo(-1) + extremo(+1)) / 2
+
 def preparar(nombre):
     f_color, f_mask, frente, umbral = ORIG[nombre]
     a = np.array(Image.open(f_color).convert("RGBA"))
     x_fin = fin_util(a.astype(np.float32))
     logos = centros_logo(a.astype(np.float32), x_fin, umbral)
     cx = logos[frente]
+    # v009: el primer frame debe mostrar el logo de frente -> se afina con el borde del disco (en la Clara el pico
+    # caía 15,6° corrido hacia "Cont. Neto 500cc"; en la Eco 1,5°)
+    prov = np.roll(a[:, :x_fin], x_fin // 2 - cx, axis=1)
+    ajuste = round(centro_disco(prov, x_fin // 2, nombre) - x_fin // 2)
+    del prov
+    cx += ajuste
     shift = x_fin // 2 - cx
     def rodar(arr):
         return np.roll(arr[:, :x_fin], shift, axis=1)
@@ -234,7 +265,8 @@ def preparar(nombre):
         mk = Image.fromarray((np.clip((lum - 110.0) / 125.0, 0, 1) * 255).astype(np.uint8), "L")
     mk.save(OUT + f"/etiqueta_{nombre}_mask.png")
     print(f"etiqueta {nombre}: original {a.shape[1]}x{a.shape[0]}, util hasta x={x_fin} ({x_fin/a.shape[1]*100:.1f} %), "
-          f"logos en x={logos} ({[round(l/x_fin, 3) for l in logos]}), de frente el {frente+1}º -> {W_OUT}x{h_out}")
+          f"logos en x={logos} ({[round(l/x_fin, 3) for l in logos]}), de frente el {frente+1}º -> {W_OUT}x{h_out}; "
+          f"ajuste por disco {ajuste:+d} px = {ajuste/x_fin*360:+.2f}°, costura a {((shift % x_fin)/x_fin - 0.5)*360:+.1f}° del frente")
     return x_fin / a.shape[0]            # aspecto útil ancho/alto
 
 asp_cl = preparar("clara")

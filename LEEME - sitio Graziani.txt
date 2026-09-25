@@ -41,7 +41,11 @@ E:\GRACIANI\WEB GRAZIANI\03 BLENDER GIRO BOTELLA\
                               (el negro del arte es gris 33). 3 vueltas; la Clara gira sola al arrancar y se cruza a la Eco con el giro
                               rápido (frames 44-56); la tapa cambia en frames 77-97 (el doble de lento). Tapa Clara #348FED.
                               Look de color: AgX - Medium High Contrast, exposición -0,2. Kicker perlado lateral (10 W).
-    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v008.blend y renderiza
+                              v009 (2026-09-25): el primer frame muestra la etiqueta Clara DE FRENTE. El pico de columnas oscuras
+                              caía corrido hacia "Cont. Neto 500cc" (Clara 15,6° girada a la derecha, Eco 1,5°); ahora
+                              centro_disco() centra el disco del logo por su borde (desvío < 0,1°). Costuras: Clara a +104,5°
+                              del frente, Eco a -94,3° (detrás del borde visible, que llega a ±87,5°).
+    02_construir_escena.py    (blender -b -P ...) arma la escena, guarda giro_botella_v009.blend y renderiza
                               v003: tapa como objeto aparte con shape key (Clara azul alta -> Eco negra corta, 66 %),
                               950 gotas de condensación (malla propia hija de la botella), AgX y luces bajas (no quema)
     03_exportar_frames_web.py (python normal) render\giro_####.png -> 02 SITIO NUEVO\assets\hero\giro\giro_###.webp

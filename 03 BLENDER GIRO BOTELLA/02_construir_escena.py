@@ -20,7 +20,9 @@ import bpy, json, math, os, sys
 BASE = "E:/GRACIANI/WEB GRAZIANI/03 BLENDER GIRO BOTELLA"
 INS = BASE + "/insumos"
 CORD = "E:/GRACIANI/WEB GRAZIANI/02 SITIO NUEVO/assets/hero/cordillera.jpg"
-BLEND_OUT = BASE + "/giro_botella_v008.blend"   # v008: etiquetas ORIGINALES planas (Clara topaz con calado / Eco 2 tintas),
+BLEND_OUT = BASE + "/giro_botella_v009.blend"   # v009: el disco del logo queda de frente en el primer y el último frame
+                                                # (insumos re-centrados; la Clara estaba 15,6° corrida, la Eco 1,5°)
+                                                # v008: etiquetas ORIGINALES planas (Clara topaz con calado / Eco 2 tintas),
                                                 # cruce Clara->Eco con el giro rápido, máscara de roughness, 3 vueltas
 VUELTAS = 3                # la Clara arranca de frente, la Eco termina de frente (cruce en el medio): vueltas enteras
 GIRO_EASE = "CUBIC"        # curva del giro: arranca y termina suave, 3x la velocidad media en el medio

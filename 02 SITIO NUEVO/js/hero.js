@@ -21,8 +21,9 @@
     pinLength: "+=120%",     // scroll pineado de la fase A (giro)
     giro: {
       frames: 120,           // render Blender (0 = flip CSS). Numerados desde 000.
-      path: (i) => `assets/hero/giro/giro_${String(i).padStart(3, "0")}.webp`,
-      introFrames: 24,       // cuántos frames "desanda" la botella al entrar (con 3 vueltas y arranque suave, ~35°)
+      // ?v= = versión del render (giro_botella_v009): el navegador no mezcla frames nuevos con viejos de la caché
+      path: (i) => `assets/hero/giro/giro_${String(i).padStart(3, "0")}.webp?v=009`,
+      introFrames: 24,      // cuántos frames "desanda" la botella al entrar (con 3 vueltas y arranque suave, ~35°)
     },
     cordillera: {
       frames: 81,            // clip ComfyUI (0 = solo paneo CSS sobre la foto fija)
