@@ -62,9 +62,20 @@ E:\GRACIANI\WEB GRAZIANI\03 BLENDER GIRO BOTELLA\
     04_video_9x16.py          (python normal, 2026-09-28) la animación sola en video vertical 1080x1920, 30 fps, sin
                               texto, sobre la cordillera fija (franja 9:16 de cordillera.jpg centrada en x=1411, como el
                               fondo de la botella en el hero; ampliada y apenas desenfocada) con el velo azul marino y el
-                              halo del hero. Entrada con pequeño giro 0,8 s + Clara 1 s + giro a Eco 4 s + Eco 2 s = 7,8 s.
-                              --prueba compara encuadres. Cuadros en video_9x16\giro9x16_####.png; MP4 en
-                              E:\GRACIANI\WEB GRAZIANI\05 PREVIEWS\giro_botella_9x16_2026-09-28.mp4
+                              halo del hero. --prueba compara encuadres.
+                                entrada -> ...\05 PREVIEWS\giro_botella_9x16_v2_2026-09-28.mp4 (8,5 s): la botella aparece
+                                  (fundido + sube, como en la web) girando HACIA ADELANTE 1,5 s, Clara 1 s, giro a Eco 4 s,
+                                  Eco 2 s. (La primera versión, ...9x16_2026-09-28.mp4, entraba girando al revés.)
+                                loop    -> ...\05 PREVIEWS\giro_botella_9x16_loop_2026-09-28.mp4 (11 s): Clara 0,75 s, giro
+                                  a Eco 4 s, Eco 1,5 s, sigue girando para el mismo lado y vuelve a Clara 4 s, Clara 0,75 s;
+                                  el último cuadro es el primero (empalma sin salto).
+                              Cuadros compuestos en video_9x16_<versión>\giro9x16_####.png.
+    05_render_extra.py        (blender 4.5 -b giro_botella_v009.blend -P 05_render_extra.py -- entrada|vuelta [--test]
+                              [--cpu] [--desde N]) tramos extra con la misma escena (el .blend no se guarda):
+                              entrada = Clara de -180° a 0° hacia adelante (45 frames, ease-out) -> render_entrada\;
+                              vuelta = 3 vueltas más para el mismo lado, etiqueta Eco->Clara en 44-56 y tapa negra corta
+                              -> azul alta en 77-97 -> render_vuelta\. (2026-09-28 la vuelta se cortó en el frame 26
+                              por falta de RAM cuando arrancó otro render de Video Inducción Técnica; se retomó por CPU.)
     Correr desde esta carpeta:
       "C:\Program Files\Blender Foundation\Blender 4.5\blender.exe" -b -P 02_construir_escena.py -- --test    (3 frames de prueba)
       "C:\Program Files\Blender Foundation\Blender 4.5\blender.exe" -b -P 02_construir_escena.py -- --render  (120 frames)
@@ -167,6 +178,10 @@ PENDIENTES
   menos frames.
 - Formulario de contacto: hoy no envía nada (igual que el original); hace falta un servicio o un PHP en el hosting.
 - Versión portrait del clip de cordillera para celulares (hoy en celular se usa la foto vertical con paneo).
+- VIDEO 9:16 EN LOOP (pausado por el usuario el 2026-09-28 a las 17:27, "mañana te aviso"): render_vuelta tiene los
+  frames 1-67 de 120. Retomar desde la carpeta 03 BLENDER GIRO BOTELLA con
+    "C:\Program Files\Blender Foundation\Blender 4.5\blender.exe" -b giro_botella_v009.blend -P 05_render_extra.py -- vuelta --desde 68
+  (agregar --cpu si la GPU está ocupada por otro render) y después: python 04_video_9x16.py loop
 - Amargos: se quedan con sus imágenes (decisión del usuario 2026-09-28); los renders con la etiqueta "Nueva
   Versión" están en 06 BLENDER PRODUCTOS WEB\render_final_junio\ por si algún día se cambian.
 
