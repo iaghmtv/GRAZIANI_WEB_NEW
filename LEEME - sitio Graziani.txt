@@ -1,6 +1,6 @@
 SITIO WEB GRAZIANI / HIDRA EMBOTELLADORA
 ========================================
-Actualizado: 2026-09-23 (tarde)
+Actualizado: 2026-09-28 (publicado en el sitio oficial)
 
 CARPETAS
 --------
@@ -8,9 +8,19 @@ E:\GRACIANI\WEB GRAZIANI\01 SITIO ORIGINAL (backup FTP 2026-09-23)\public_html\
     Copia EXACTA del servidor bajada por FTP-TLS el 2026-09-23 (130 archivos, 36,3 MB, tamaños verificados,
     fechas del servidor conservadas). NO TOCAR: es el respaldo.
 
+PUBLICADO EN EL SITIO OFICIAL (2026-09-28, pedido del usuario: "actualiza la página oficial", amargos sin cambios)
+    https://hidraembotelladora.com  <- 02 SITIO NUEVO subido por FTP-TLS con 00 HERRAMIENTAS\ftp_publicar.py
+    (simulación por defecto; --publicar hace backup de lo que pisa, sube solo lo nuevo/distinto y verifica tamaños;
+    nunca borra nada del servidor). 235 archivos (24,4 MB): 228 nuevos + 7 reemplazados (index, origen,
+    sustentabilidad, styles/origen/sustentabilidad.css, productos.js). Lo que había antes de esos 7:
+    E:\GRACIANI\WEB GRAZIANI\00 HERRAMIENTAS\backup_predeploy_2026-09-28\public_html\
+    No se suben: capturas (_captura_*.html), hero.html (prototipo), pagina-anterior.html, hojas hero_*.jpg de la
+    raíz, cgi-bin, .htaccess (lo maneja cPanel), .well-known. Volver atrás: subir el backup predeploy (y el del 23).
+    Inventarios del servidor: 00 HERRAMIENTAS\inventario_2026-09-23.json / inventario_2026-09-28.json.
+
 E:\GRACIANI\WEB GRAZIANI\02 SITIO NUEVO\
     Copia de trabajo (arrancó como copia de 01). Se prueba local con el servidor de .claude\launch.json
-    (http://localhost:8765). Cuando esté aprobada, se sube por FTP a /public_html.
+    (http://localhost:8765). Se publica con 00 HERRAMIENTAS\ftp_publicar.py (ver arriba).
     Novedades:
       hero.html + css\hero.css + js\hero.js   -> HERO NUEVO animado por scroll (ver abajo)
       assets\hero\                           -> fondo cordillera, botellas recortadas, secuencia giro\
@@ -145,14 +155,14 @@ VERSIÓN MÓVIL (2026-09-24) - con lo aprendido en la skill ghm-web (E:\08 WEB G
 
 PENDIENTES
 ----------
-- (hecho) Clip de la cordillera: 81 frames de ComfyUI ya integrados (HERO.cordillera.frames = 81).
-- Peso del hero: 120 + 81 frames WebP = ~18 MB. Para producción: AVIF, menos frames (60/41) o versión liviana para celular.
-- Hoja de contacto de los encuadres finales: E:\GRACIANI\WEB GRAZIANI\02 SITIO NUEVO\hero_encuadres_2026-09-23.jpg
-- Ajustar el look del render (tapa, reflejos) si hace falta, y renderizar a más samples para la versión final.
-- Si aparecen las etiquetas planas (archivos de imprenta), reemplazar insumos\etiqueta_*.png: mejora mucho el dorso.
-- Integrar el hero en index.html y rehacer el resto de secciones (Productos con la maqueta del Servidor 3, Calidad, Contacto).
-- Formulario de contacto: hoy no envía nada; hace falta un servicio o un PHP en el hosting.
-- Versión portrait del clip de cordillera para celulares (hoy se recorta el de 16:9).
+- (hecho) Clip de la cordillera, hero integrado en index.html, etiquetas planas originales (v008/v009),
+  botellas del carrusel para el fondo celeste, publicación en el sitio oficial (2026-09-28).
+- Peso del hero: 120 + 81 frames WebP = ~21 MB en escritorio (en celular no baja el clip). Mejora posible: AVIF o
+  menos frames.
+- Formulario de contacto: hoy no envía nada (igual que el original); hace falta un servicio o un PHP en el hosting.
+- Versión portrait del clip de cordillera para celulares (hoy en celular se usa la foto vertical con paneo).
+- Amargos: se quedan con sus imágenes (decisión del usuario 2026-09-28); los renders con la etiqueta "Nueva
+  Versión" están en 06 BLENDER PRODUCTOS WEB\render_final_junio\ por si algún día se cambian.
 
 PROBLEMAS DEL ORIGINAL (para no olvidar)
 ----------------------------------------

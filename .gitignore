@@ -18,7 +18,9 @@ GRAZIANI WEB DATA.ENV
 04 COMFYUI CORDILLERA/*.log
 
 # ===== Inventarios y herramientas locales =====
-00 HERRAMIENTAS/inventario.json
+00 HERRAMIENTAS/inventario*.json
+00 HERRAMIENTAS/backup_predeploy_*/
+00 HERRAMIENTAS/publicacion_*.log
 .claude/
 
 # ===== Basura de sistema =====
