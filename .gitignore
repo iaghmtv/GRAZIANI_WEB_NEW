@@ -10,6 +10,7 @@ GRAZIANI WEB DATA.ENV
 # ===== Blender: se versionan scripts, insumos y el .blend; no los renders =====
 03 BLENDER GIRO BOTELLA/render/
 03 BLENDER GIRO BOTELLA/render_test/
+03 BLENDER GIRO BOTELLA/video_9x16/
 03 BLENDER GIRO BOTELLA/*.blend1
 03 BLENDER GIRO BOTELLA/*.log
 
